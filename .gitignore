@@ -1,3 +1,4 @@
 **/infra/volume
 
 terraform.tfvars
+secrets.go
