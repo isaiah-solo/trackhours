@@ -37,7 +37,7 @@ var eventNames = [...]string{
 
 func main() {
   router := gin.Default()
-  router.Use(static.Serve("/", static.LocalFile("../frontend/src/public", true)))
+  router.Use(static.Serve("/", static.LocalFile("../view/public", true)))
   api := router.Group("/api")
   api.POST("/account_creation", AccountCreationHandler)
   api.POST("/login", LoginHandler)
