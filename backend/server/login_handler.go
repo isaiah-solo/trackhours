@@ -26,19 +26,79 @@ type User struct {
   Username string `json:"username"`
 }
 
+var loginInternalErrorResponse = LoginResponse{
+  Error: "Issue with server rendering",
+}
+
+var loginInvalidUserResponse = LoginResponse{
+  Error: "User does not exist",
+}
+
+var loginIncorrectPasswordResponse = LoginResponse{
+  Error: "Incorrect username and password combination",
+}
+
+var successResponse = LoginResponse{
+  Error: "",
+}
+
+func AccountCreationHandler(c *gin.Context) {
+  c.Header("Content-Type", "application/json")
+  db := EstablishConnection()
+  defer db.Close()
+  body, err := ioutil.ReadAll(c.Request.Body)
+  if err != nil {
+    c.JSON(http.StatusInternalServerError, &loginInternalErrorResponse)
+    return
+  }
+  var accountInformation AccountInformation
+  if err := json.Unmarshal(body, &accountInformation); err != nil {
+    c.JSON(http.StatusInternalServerError, &loginInternalErrorResponse)
+    return
+  }
+  hash, err := bcrypt.GenerateFromPassword([]byte(accountInformation.Password), bcrypt.MinCost)
+  if err != nil {
+    c.JSON(http.StatusInternalServerError, &loginInternalErrorResponse)
+    return
+  }
+  user := User {
+    Password: string(hash),
+    Username: accountInformation.Username,
+  }
+  userInsert, err := db.Prepare(
+    "INSERT INTO user (password, username) VALUES (?, ?)",
+  )
+  if _, err := userInsert.Exec(
+    user.Password,
+    user.Username,
+  ); err != nil {
+    c.JSON(http.StatusInternalServerError, &loginInternalErrorResponse)
+    return
+  }
+  // Generate user session key
+  u, err := uuid.NewV4()
+  if err != nil {
+    c.JSON(http.StatusInternalServerError, &loginInternalErrorResponse)
+    return
+  }
+  sessionKey := u.String()
+  sessionKeyInsert, err := db.Prepare(
+    "INSERT INTO user_session (owner_username, session_key) VALUES (?, ?)",
+  )
+  if _, err := sessionKeyInsert.Exec(user.Username, sessionKey); err != nil {
+    c.JSON(http.StatusInternalServerError, &loginInternalErrorResponse)
+    return
+  }
+  // Set cookie
+  cookie := http.Cookie{
+    Name: "trackhours_session_key",
+    Value: sessionKey,
+  }
+  http.SetCookie(c.Writer, &cookie)
+  c.JSON(http.StatusOK, &successResponse)
+}
+
 func LoginHandler(c *gin.Context) {
-  loginInternalErrorResponse := LoginResponse{
-    Error: "Issue with server rendering",
-  }
-  loginInvalidUserResponse := LoginResponse{
-    Error: "User does not exist",
-  }
-  loginIncorrectPasswordResponse := LoginResponse{
-    Error: "Incorrect username and password combination",
-  }
-  successResponse := LoginResponse{
-    Error: "",
-  }
   c.Header("Content-Type", "application/json")
   db := EstablishConnection()
   defer db.Close()
