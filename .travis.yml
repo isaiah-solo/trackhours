@@ -1,0 +1,17 @@
+language: go
+go:
+- 1.8
+script: 
+after_success:
+- docker login -u $DOCKER_USER -p $DOCKER_PASS
+- export REPO=isaiahsolo/trackhours.co
+- export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH
+  ; fi`
+- docker build -f Dockerfile -t $REPO:$COMMIT .
+- docker tag $REPO:$COMMIT $REPO:$TAG
+- docker tag $REPO:$COMMIT $REPO:travis-$TRAVIS_BUILD_NUMBER
+- docker push $REPO
+env:
+  global:
+  - secure: m/Qw2EjHz45Yy1su91XZ8xkOBKmI3XcBtEC32c9NR05kRYM4m91TAlzpiAQAWZxGf5zEDDOgzUFZ3c5zObSEca36dnud4uBgilFYQAAJXTu2uegotCRVpVhdrjQjYXRP5sjy35qXeZhJ1Ai7d59rnSeyI75PjdKzS2I9SD63mvzCXD5jK0bGUk+YOyUVX4bnqS8LvfrSBRycMV04XggzuoqvOx1tLNpoHcpRurIEboX1kuiDLlu+0C2ImUwx2UZQoU1Hl+ImQfZRif1oCtP77vkRub61lzJYryBIIFKnjS4BhS+ADEbukkhjt57tGo1Pm5QcRQwSJPgCCFi01CnqQKfga3D8pbJAceSiR/hoojya8hrYzbO4bqPtVzl0BQ5YSVYhhTuF5pv24Yvwl73e6VdXkgNwK+zWSExm84mClKR8eYhdnZgm14XgnRpGwEqS6asR7jfllFq7pigrLt2Gyjqv9M1ZkpDY3xwR73R0eQIdOueohSNPV+mlrgWRJskms7VV/3nLse5p439B6xGRy5iB+jwsEmam3qwMZKj9+HcsrN9Z7leJWRV7jpR5U12nNrH7KzbSuVB+XQ+uiAjYRsYN8vMrCzEKnwHlwqRjUq4xPRD01pE2MG+UyeXV+n/CFiNjt6sW5zcMmWA4BgyAe8vDK4Jx0uf8vL0ECd8m0sU=
+  - secure: lexfXjbobFKLsdHXkrwuVI7pAH41W+kdOyYCwwpv45Rml84SbZhzuPQaBLz2N2jHp6S7VjsgM90GvFa5SkwnpkFPC8LO4LegOHjDHLlnUbwWxJMKZeDgHJovtEWoE67qajhq7S8jZCwYoNgVlylzNoYSdFa4fvFo/sxsneZcUbFVhFZ038q/EnZm6cx4rFKI9FWaSpXh1HsrK8b5ZE325rxP6fjjjat3l4wz0pm0tVei6zN07SRSF5gFV6M2wO9XPKEZPyWzxvwIVkhSCyZgsgaxeOkSviHE6A5SGexcIHDTqhSSNT12BUTykUyI4uyUqoXd1iPDvpVNKBVM5x/lLp39dZ+IZzqqSFWCtA4eWiJJicsUoXZroGxnz3ZduDGylwGsYd+XfJNH/XAubswVtW+v0wQ/pQGBfuzA0VSMgFh4SAZlni9SyTjjMwerO8LcoKX1aRud3RmMNkfnMzHnKVEp5xWA+xtz/koQ7V7IYCgoPrBzsPe8l/ofmmO2byVv7a4VhpYHNvmV2nUj6eQ2Ngb9w07git1jwRYwyyeZk+e6Rz6dK5aXdSzVLzlycsGPY7oKAX4BGZGbg0AFmpMRg8phy///oujavUjlN6y8msH9zq/kFn9TGM81MlreyFxwIoF+RDepDnCT3Sv8NE+40O4efRjFN151SvodlU5LRKA=
