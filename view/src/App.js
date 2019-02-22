@@ -1,28 +1,23 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, {useEffect, useState} from 'react';
+import HomePage from './HomePage';
+import LoginPage from './LoginPage';
 
-class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
-    );
-  }
-}
+const App = (props) => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  useEffect(() => {
+    fetch('http://localhost:8081/api/checklogin', {
+      credentials: 'include',
+    })
+      .then(response => response.json())
+      .then(data => {
+        const {is_logged_in} = data;
+        setIsLoggedIn(is_logged_in);
+      })
+      .catch(error => console.log(error));
+  }, []);
+  return (
+    isLoggedIn ? <HomePage /> : <LoginPage />
+  );
+};
 
 export default App;

@@ -35,10 +35,22 @@ var eventNames = [...]string{
   "start_lunch_event",
 }
 
+func test(c *gin.Context) {
+  c.Header("Access-Control-Allow-Credentials", "true")
+  c.Header("Access-Control-Allow-Origin", "http://localhost:3000")
+  _, err := c.Cookie("trackhours_session_key")
+  isLoggedIn := true
+  if err != nil {
+    isLoggedIn = false
+  }
+  c.JSON(200, gin.H {"is_logged_in": isLoggedIn, "error": err})
+}
+
 func main() {
   router := gin.Default()
-  router.Use(static.Serve("/", static.LocalFile("../view/public", true)))
+  router.Use(static.Serve("/", static.LocalFile("../view/build", true)))
   api := router.Group("/api")
+  api.GET("/checklogin", test)
   api.POST("/account_creation", AccountCreationHandler)
   api.POST("/login", LoginHandler)
   router.Run(":8081")

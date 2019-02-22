@@ -43,7 +43,8 @@ var successResponse = LoginResponse{
 }
 
 func AccountCreationHandler(c *gin.Context) {
-  c.Header("Content-Type", "application/json")
+  c.Header("Access-Control-Allow-Credentials", "true")
+  c.Header("Access-Control-Allow-Origin", "http://localhost:3000")
   db := EstablishConnection()
   defer db.Close()
   body, err := ioutil.ReadAll(c.Request.Body)
@@ -90,16 +91,13 @@ func AccountCreationHandler(c *gin.Context) {
     return
   }
   // Set cookie
-  cookie := http.Cookie{
-    Name: "trackhours_session_key",
-    Value: sessionKey,
-  }
-  http.SetCookie(c.Writer, &cookie)
+  c.SetCookie("trackhours_session_key", sessionKey, 360000, "/", "", false, false)
   c.JSON(http.StatusOK, &successResponse)
 }
 
 func LoginHandler(c *gin.Context) {
-  c.Header("Content-Type", "application/json")
+  c.Header("Access-Control-Allow-Credentials", "true")
+  c.Header("Access-Control-Allow-Origin", "http://localhost:3000")
   db := EstablishConnection()
   defer db.Close()
   body, err := ioutil.ReadAll(c.Request.Body)
@@ -152,10 +150,14 @@ func LoginHandler(c *gin.Context) {
     return
   }
   // Set cookie
-  cookie := http.Cookie{
+  http.SetCookie(c.Writer, &http.Cookie{
     Name: "trackhours_session_key",
     Value: sessionKey,
-  }
-  http.SetCookie(c.Writer, &cookie)
+    MaxAge: 360000,
+    Path: "/",
+    Secure: false,
+    HttpOnly: false,
+  })
+  //c.SetCookie("trackhours_session_key", sessionKey, 360000, "/", "", false, false)
   c.JSON(http.StatusOK, &successResponse)
 }
