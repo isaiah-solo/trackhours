@@ -12,9 +12,9 @@ func EstablishConnection() *sql.DB {
     "mysql",
     fmt.Sprintf(
       "%s:%s@/%s",
-      os.Getenv("MYSQL_USERNAME_CREDENTIAL")
-      os.Getenv("MYSQL_PASSWORD_CREDENTIAL")
-      os.Getenv("MYSQL_DATABASE_CREDENTIAL")
+      os.Getenv("MYSQL_USERNAME_CREDENTIAL"),
+      os.Getenv("MYSQL_PASSWORD_CREDENTIAL"),
+      os.Getenv("MYSQL_DATABASE_CREDENTIAL"),
     ),
   )
   if err != nil {
