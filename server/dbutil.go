@@ -2,6 +2,7 @@ package main
 
 import (
   "fmt"
+  "os"
   "database/sql"
   _ "github.com/go-sql-driver/mysql"
 )
@@ -11,9 +12,9 @@ func EstablishConnection() *sql.DB {
     "mysql",
     fmt.Sprintf(
       "%s:%s@/%s",
-      MySQLUsernameCredential,
-      MySQLPasswordCredential,
-      MySQLDatabaseCredential,
+      os.Getenv("MYSQL_USERNAME_CREDENTIAL")
+      os.Getenv("MYSQL_PASSWORD_CREDENTIAL")
+      os.Getenv("MYSQL_DATABASE_CREDENTIAL")
     ),
   )
   if err != nil {
