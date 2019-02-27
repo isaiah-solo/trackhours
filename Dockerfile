@@ -4,7 +4,7 @@ COPY . .
 
 RUN apt-get update && curl -sL https://deb.nodesource.com/setup_11.x | bash -
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install nodejs
-RUN cd view && /usr/local/bin/npm install && /usr/local/bin/npm run build
+RUN cd view && npm install && npm run build
 RUN cd server && go get -d -v ./... && go build -o server .
 
 EXPOSE 80
