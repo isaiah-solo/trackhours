@@ -5,7 +5,7 @@ provider "aws" {
 }
 
 resource "aws_security_group" "site_prod" {
-  name = "site_prod"
+  name = "trackhours_prod"
   description = "Site Security Group"
 
   ingress {
