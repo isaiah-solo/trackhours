@@ -44,7 +44,7 @@ var successResponse = LoginResponse{
 
 func AccountCreationHandler(c *gin.Context) {
   c.Header("Access-Control-Allow-Credentials", "true")
-  c.Header("Access-Control-Allow-Origin", "http://localhost:3000")
+  c.Header("Access-Control-Allow-Origin", "http://trackhours.co")
   db := EstablishConnection()
   defer db.Close()
   body, err := ioutil.ReadAll(c.Request.Body)
@@ -97,7 +97,7 @@ func AccountCreationHandler(c *gin.Context) {
 
 func LoginHandler(c *gin.Context) {
   c.Header("Access-Control-Allow-Credentials", "true")
-  c.Header("Access-Control-Allow-Origin", "http://localhost:3000")
+  c.Header("Access-Control-Allow-Origin", "http://trackhours.co")
   db := EstablishConnection()
   defer db.Close()
   body, err := ioutil.ReadAll(c.Request.Body)
@@ -155,6 +155,7 @@ func LoginHandler(c *gin.Context) {
     Value: sessionKey,
     MaxAge: 360000,
     Path: "/",
+    Domain: "trackhours.co",
     Secure: false,
     HttpOnly: false,
   })

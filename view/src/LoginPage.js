@@ -91,7 +91,7 @@ const LoginPage = (props) => {
         <Button
           onClick={() => (
             fetch(
-              'http://localhost:8081/api/login',
+              'http://trackhours.co/api/login',
               {
                 body: JSON.stringify({
                   password,
@@ -110,7 +110,7 @@ const LoginPage = (props) => {
         <Button
           onClick={() => (
             fetch(
-              'http://localhost:8081/api/account_creation',
+              'http://trackhours.co/api/account_creation',
               {
                 body: JSON.stringify({
                   password,

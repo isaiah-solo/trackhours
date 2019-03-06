@@ -37,7 +37,7 @@ var eventNames = [...]string{
 
 func test(c *gin.Context) {
   c.Header("Access-Control-Allow-Credentials", "true")
-  c.Header("Access-Control-Allow-Origin", "http://localhost:3000")
+  c.Header("Access-Control-Allow-Origin", "http://trackhours.co")
   _, err := c.Cookie("trackhours_session_key")
   isLoggedIn := true
   if err != nil {
@@ -48,7 +48,7 @@ func test(c *gin.Context) {
 
 func main() {
   router := gin.Default()
-  router.Use(static.Serve("/", static.LocalFile("../view/build", true)))
+  router.Use(static.Serve("/", static.LocalFile("/usr/src/app/view/build", true)))
   api := router.Group("/api")
   api.GET("/checklogin", test)
   api.POST("/account_creation", AccountCreationHandler)

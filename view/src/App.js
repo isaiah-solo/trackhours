@@ -5,7 +5,7 @@ import LoginPage from './LoginPage';
 const App = (props) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   useEffect(() => {
-    fetch('http://localhost:8081/api/checklogin', {
+    fetch('http://trackhours.co/api/checklogin', {
       credentials: 'include',
     })
       .then(response => response.json())
