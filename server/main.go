@@ -1,6 +1,9 @@
 package main
 
 import (
+  "os"
+  "path/filepath"
+  "net/http"
   "github.com/gin-gonic/contrib/static"
   "github.com/gin-gonic/gin"
 )
@@ -35,22 +38,26 @@ var eventNames = [...]string{
   "start_lunch_event",
 }
 
-func test(c *gin.Context) {
-  c.Header("Access-Control-Allow-Credentials", "true")
-  c.Header("Access-Control-Allow-Origin", "http://trackhours.co")
-  _, err := c.Cookie("trackhours_session_key")
-  isLoggedIn := true
-  if err != nil {
-    isLoggedIn = false
-  }
-  c.JSON(200, gin.H {"is_logged_in": isLoggedIn, "error": err})
-}
-
 func main() {
   router := gin.Default()
-  router.Use(static.Serve("/", static.LocalFile("/usr/src/app/view/build", true)))
+  router.Use(static.Serve("/static", static.LocalFile("../view/build/static", true)))
+  fileList := []string{}
+  filepath.Walk("../view/build", func(path string, f os.FileInfo, err error) error {
+    if !(f.IsDir()) {
+      fileList = append(fileList, path)
+    }
+    return nil
+  })
+  router.LoadHTMLFiles(fileList...)
+  router.GET("/", func(c *gin.Context) {
+    c.HTML(
+      http.StatusOK,
+      "index.html",
+      gin.H {},
+    )
+  })
   api := router.Group("/api")
-  api.GET("/checklogin", test)
+  api.GET("/checklogin", CheckLoginHandler)
   api.POST("/account_creation", AccountCreationHandler)
   api.POST("/login", LoginHandler)
   router.Run(":8081")

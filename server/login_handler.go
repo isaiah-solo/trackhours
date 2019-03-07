@@ -95,6 +95,17 @@ func AccountCreationHandler(c *gin.Context) {
   c.JSON(http.StatusOK, &successResponse)
 }
 
+func CheckLoginHandler(c *gin.Context) {
+  c.Header("Access-Control-Allow-Credentials", "true")
+  c.Header("Access-Control-Allow-Origin", "http://trackhours.co")
+  _, err := c.Cookie("trackhours_session_key")
+  isLoggedIn := true
+  if err != nil {
+    isLoggedIn = false
+  }
+  c.JSON(200, gin.H {"is_logged_in": isLoggedIn, "error": err})
+}
+
 func LoginHandler(c *gin.Context) {
   c.Header("Access-Control-Allow-Credentials", "true")
   c.Header("Access-Control-Allow-Origin", "http://trackhours.co")
