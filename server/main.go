@@ -44,6 +44,9 @@ func main() {
   rootDir := "../view/build"
   fileList := []string{}
   filepath.Walk(rootDir, func(path string, f os.FileInfo, err error) error {
+    if err != nil {
+      return err
+    }
     if f.IsDir() {
       return filepath.SkipDir
     }
