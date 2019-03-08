@@ -44,9 +44,10 @@ func main() {
   rootDir := "../view/build"
   fileList := []string{}
   filepath.Walk(rootDir, func(path string, f os.FileInfo, err error) error {
-    if !(f.IsDir()) {
-      fileList = append(fileList, path)
+    if f.IsDir() {
+      return filepath.SkipDir
     }
+    fileList = append(fileList, path)
     return nil
   })
   router.LoadHTMLFiles(fileList...)
