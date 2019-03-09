@@ -41,7 +41,7 @@ var eventNames = [...]string{
 func main() {
   router := gin.Default()
   router.Use(static.Serve("/static", static.LocalFile("/usr/src/app/view/build/static", true)))
-  rootDir := "/usr/app/view/build"
+  rootDir := "/usr/src/app/view/build"
   fileList := []string{}
   err := filepath.Walk(rootDir, func(path string, f os.FileInfo, err error) error {
     if err != nil {
