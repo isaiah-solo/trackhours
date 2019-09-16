@@ -1,5 +1,7 @@
 import React from 'react';
-import styled from 'styled-components'
+import styled from 'styled-components';
+
+import Page from './component/Page';
 
 interface Props {}
 
@@ -26,16 +28,6 @@ const Content = styled.div`
   flex-direction: column;
   flex-grow: 1;
   height: 100%;
-`;
-
-const Page = styled.div`
-  background-color: #202020;
-  box-sizing: border-box;
-  color: white;
-  display: flex;
-  flex-direction: row;
-  height: 100vh;
-  width: 100vw;
 `;
 
 const Sidebar = styled.div`

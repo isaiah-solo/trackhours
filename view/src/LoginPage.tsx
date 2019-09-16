@@ -1,7 +1,8 @@
 import React, {useState} from 'react';
 import styled from 'styled-components'
 
-import CredentialInput from './CredentialInput';
+import CredentialInput from './component/CredentialInput';
+import Page from './component/Page';
 
 interface Props {}
 
@@ -86,16 +87,6 @@ const Content = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-`;
-
-const Page = styled.div`
-  align-items: center;
-  background-color: #202020;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: row;
-  height: 100vh;
-  width: 100vw;
 `;
 
 const Title = styled.div`
