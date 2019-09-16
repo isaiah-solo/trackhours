@@ -1,6 +1,8 @@
 import React from 'react';
 
-const HomePage = (props) => {
+interface Props {}
+
+function HomePage(props: Props) {
   return (
     <div>{'Logged In!'}</div>
   );
