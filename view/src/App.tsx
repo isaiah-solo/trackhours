@@ -19,7 +19,8 @@ const App = (props: Props) => {
       .catch(error => console.log(error));
   }, []);
   return (
-    isLoggedIn ? <HomePage /> : <LoginPage />
+    //isLoggedIn ? <HomePage /> : <LoginPage />
+    <HomePage />
   );
 };
 
