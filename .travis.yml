@@ -12,7 +12,6 @@ after_success:
 - export REPO=isaiahsolo/trackhours.co
 - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH
   ; fi`
-- docker-compose pull
 - docker-compose build
 - docker images
 - docker-compose push
