@@ -2,9 +2,7 @@ import React, {useEffect, useState} from 'react';
 import HomePage from './HomePage';
 import LoginPage from './LoginPage';
 
-interface Props {}
-
-const App = (props: Props) => {
+const App = (props) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   useEffect(() => {
     fetch('http://localhost:8081/api/checklogin', {
@@ -19,8 +17,7 @@ const App = (props: Props) => {
       .catch(error => console.log(error));
   }, []);
   return (
-    //isLoggedIn ? <HomePage /> : <LoginPage />
-    <HomePage />
+    isLoggedIn ? <HomePage /> : <LoginPage />
   );
 };
 

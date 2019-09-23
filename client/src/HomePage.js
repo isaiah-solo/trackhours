@@ -3,9 +3,7 @@ import styled from 'styled-components';
 
 import Page from './component/Page';
 
-interface Props {}
-
-function HomePage(props: Props) {
+function HomePage(props) {
   return (
     <Page>
       <Sidebar>

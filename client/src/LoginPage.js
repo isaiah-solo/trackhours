@@ -4,16 +4,14 @@ import styled from 'styled-components'
 import CredentialInput from './component/CredentialInput';
 import Page from './component/Page';
 
-interface Props {}
-
-function LoginPage(props: Props) {
+function LoginPage(props) {
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
-  const handleSetPassword = (e: any): void =>
+  const handleSetPassword = (e) =>
     setPassword(e.target.value);
-  const handleSetUsername = (e: any): void =>
+  const handleSetUsername = (e) =>
     setUsername(e.target.value);
-  const login = (): void => {
+  const login = () => {
     fetch(
       'http://localhost:8081/api/login',
       {
@@ -27,7 +25,7 @@ function LoginPage(props: Props) {
       },
     ).then((response) => {console.log(response.body)});
   };
-  const createAccount = (): void => {
+  const createAccount = () => {
     fetch(
       'http://localhost:8081/api/account_creation',
       {
@@ -39,7 +37,7 @@ function LoginPage(props: Props) {
         method: 'POST',
         mode: 'no-cors',
       },
-    ).then((response): void => {console.log(response.body)});
+    ).then((response) => {console.log(response.body)});
   };
   return (
     <Page>
