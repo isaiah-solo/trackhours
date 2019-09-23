@@ -1,4 +1,4 @@
-const API_URI = process.env.REACT_ENVIRONMENT === 'dev'
+const API_URI = process.env.NODE_ENV === 'development'
   ? 'http://localhost:8081'
   : 'http://trackhours.co';
 
