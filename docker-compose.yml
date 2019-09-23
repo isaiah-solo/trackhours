@@ -4,7 +4,9 @@ services:
     build:
       context: .
       dockerfile: client/Dockerfile
+      image: isaiahsolo/trackhours-client
   server:
     build:
       context: .
       dockerfile: server/Dockerfile
+      image: isaiahsolo/trackhours-server
