@@ -15,7 +15,6 @@ after_success:
 - docker-compose pull
 - docker-compose build
 - docker-compose start
-- docker build -f server/Dockerfile -t $REPO:$COMMIT .
 - docker tag $REPO:$COMMIT $REPO:$TAG
 - docker tag $REPO:$COMMIT $REPO:travis-$TRAVIS_BUILD_NUMBER
 - docker push $REPO
