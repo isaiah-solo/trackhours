@@ -1,13 +1,15 @@
 import React, {useState} from 'react';
 import styled from 'styled-components'
 
-function CredentialInput({onChange, placeholder, type, value}) (
-  <Input
-    onChange={onChange}
-    placeholder={placeholder}
-    type={type}
-    value={value} />
-);
+function CredentialInput({onChange, placeholder, type, value}) {
+  return (
+    <Input
+      onChange={onChange}
+      placeholder={placeholder}
+      type={type}
+      value={value} />
+  );
+};
 
 const Input = styled.input`
   border-radius: 4px;
