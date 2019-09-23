@@ -4,6 +4,8 @@ import styled from 'styled-components'
 import CredentialInput from './component/CredentialInput';
 import Page from './component/Page';
 
+import {fetchLogin} from './api';
+
 function LoginPage(props) {
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
@@ -13,16 +15,8 @@ function LoginPage(props) {
     setUsername(e.target.value);
   const login = () => {
     fetch(
-      'http://localhost:8081/api/login',
-      {
-        body: JSON.stringify({
-          password,
-          username,
-        }),
-        credentials: 'same-origin',
-        method: 'POST',
-        mode: 'no-cors',
-      },
+      password,
+      username
     ).then((response) => {console.log(response.body)});
   };
   const createAccount = () => {
