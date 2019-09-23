@@ -14,7 +14,7 @@ function LoginPage(props) {
   const handleSetUsername = (e) =>
     setUsername(e.target.value);
   const login = () => {
-    fetch(
+    fetchLogin(
       password,
       username
     ).then((response) => {console.log(response.body)});
