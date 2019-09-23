@@ -1,6 +1,6 @@
 language: go
 go:
-- 1.9
+- 1.10
 script: 
 after_success:
 - docker login -u $DOCKER_USER -p $DOCKER_PASS
