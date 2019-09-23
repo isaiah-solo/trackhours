@@ -1,11 +1,7 @@
 import React from 'react';
 import styled from 'styled-components'
 
-interface Props {
-  children: any
-}
-
-function Page({children}: Props) {
+function Page({children}) {
   return (
     <PageDiv>
       {children}

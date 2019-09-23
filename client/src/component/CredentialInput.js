@@ -1,6 +1,14 @@
 import React, {useState} from 'react';
 import styled from 'styled-components'
 
+function CredentialInput({onChange, placeholder, type, value}) (
+  <Input
+    onChange={onChange}
+    placeholder={placeholder}
+    type={type}
+    value={value} />
+);
+
 const Input = styled.input`
   border-radius: 4px;
   border-width: 0px;
@@ -13,20 +21,5 @@ const Input = styled.input`
     outline-width: 0;
   }
 `;
-
-interface Props {
-  onChange: (e: any) => void,
-  placeholder: string,
-  type: string,
-  value: string,
-}
-
-const CredentialInput = ({onChange, placeholder, type, value}: Props) => (
-  <Input
-    onChange={onChange}
-    placeholder={placeholder}
-    type={type}
-    value={value} />
-);
 
 export default CredentialInput;
