@@ -9,8 +9,12 @@ function HomePage(props: Props) {
   return (
     <Page>
       <Sidebar>
-        <SidebarItem />
-        <SidebarItem />
+        <SidebarItem>
+          Button 1
+        </SidebarItem>
+        <SidebarItem>
+          Button 2
+        </SidebarItem>
       </Sidebar>
       <Content>
         Content
