@@ -1,8 +1,8 @@
 FROM node:carbon as builder
 WORKDIR /usr/src/app
-COPY package*.json ./
+COPY client/package*.json ./
 RUN npm install
-COPY . .
+COPY client/. .
 RUN npm run build
 
 FROM nginx
