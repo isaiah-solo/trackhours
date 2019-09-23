@@ -5,6 +5,6 @@ COPY server/. .
 RUN go get -d -v ./...
 RUN go build -o server .
 
-EXPOSE 80
+EXPOSE 8081
 CMD ["./server"]
 

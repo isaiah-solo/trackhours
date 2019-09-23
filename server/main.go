@@ -37,13 +37,6 @@ var eventNames = [...]string{
 
 func main() {
   router := gin.Default()
-  router.GET("/", func(c *gin.Context) {
-    c.HTML(
-      http.StatusOK,
-      "index.html",
-      gin.H {},
-    )
-  })
   api := router.Group("/api")
   api.GET("/checklogin", CheckLoginHandler)
   api.POST("/account_creation", AccountCreationHandler)
