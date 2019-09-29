@@ -3,6 +3,7 @@ import styled from 'styled-components'
 
 import CredentialInput from './component/CredentialInput';
 import Page from './component/Page';
+import PageItemCentered from './component/PageItemCentered';
 
 import {fetchCreateAccount, fetchLogin} from './api/login';
 
@@ -35,24 +36,26 @@ function LoginPage() {
   );
   return (
     <Page>
-      <Content>
-        <Title>trackhours</Title>
-        <CredentialInput
-          onChange={setUsername}
-          placeholder="username"
-          value={username} />
-        <CredentialInput
-          onChange={setPassword}
-          placeholder="password"
-          password
-          value={password} />
-        <Button onClick={login}>
-          Login
-        </Button>
-        <Button onClick={createAccount}>
-          Create Account
-        </Button>
-      </Content>
+      <PageItemCentered>
+        <Content>
+          <Title>trackhours</Title>
+          <CredentialInput
+            onChange={setUsername}
+            placeholder="username"
+            value={username} />
+          <CredentialInput
+            onChange={setPassword}
+            placeholder="password"
+            password
+            value={password} />
+          <Button onClick={login}>
+            Login
+          </Button>
+          <Button onClick={createAccount}>
+            Create Account
+          </Button>
+        </Content>
+      </PageItemCentered>
     </Page>
   );
 };
@@ -77,7 +80,6 @@ const Content = styled.div`
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  width: 100%;
 `;
 
 const Title = styled.div`

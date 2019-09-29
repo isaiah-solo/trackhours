@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components'
 
-function Page({children}) {
+function PageItemCentered({children}) {
   return (
     <Root>
       {children}
@@ -15,8 +15,11 @@ const Root = styled.div`
   color: white;
   display: flex;
   flex-direction: row;
-  height: 100vh;
-  width: 100vw;
+  height: fit-content;
+  position: relative;
+  left: 50%;
+  top: 50%;
+  transform: perspective(1px) translateY(-50%) translateX(-50%);
 `;
 
-export default Page;
+export default PageItemCentered;
