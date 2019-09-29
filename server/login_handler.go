@@ -4,11 +4,10 @@ import (
   "encoding/json"
   "io/ioutil"
   "net/http"
-
+  "fmt"
   "github.com/gin-gonic/gin"
   "github.com/satori/go.uuid"
   "golang.org/x/crypto/bcrypt"
-
   _ "github.com/go-sql-driver/mysql"
 )
 
@@ -70,6 +69,10 @@ func AccountCreationHandler(c *gin.Context) {
   userInsert, err := db.Prepare(
     "INSERT INTO user (password, username) VALUES (?, ?)",
   )
+  if err != nil {
+    c.JSON(http.StatusInternalServerError, &loginInternalErrorResponse)
+    return
+  }
   if _, err := userInsert.Exec(
     user.Password,
     user.Username,

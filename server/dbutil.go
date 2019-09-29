@@ -8,14 +8,15 @@ import (
 )
 
 func EstablishConnection() *sql.DB {
+  credentials := fmt.Sprintf(
+    "%s:%s@/%s",
+    os.Getenv("MYSQL_USERNAME_CREDENTIAL"),
+    os.Getenv("MYSQL_PASSWORD_CREDENTIAL"),
+    os.Getenv("MYSQL_DATABASE_CREDENTIAL"),
+  )
   db, err := sql.Open(
     "mysql",
-    fmt.Sprintf(
-      "%s:%s@/%s",
-      os.Getenv("MYSQL_USERNAME_CREDENTIAL"),
-      os.Getenv("MYSQL_PASSWORD_CREDENTIAL"),
-      os.Getenv("MYSQL_DATABASE_CREDENTIAL"),
-    ),
+    credentials,
   )
   if err != nil {
     panic(err)

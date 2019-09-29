@@ -15,7 +15,7 @@ function LoginPage(props) {
         password,
         username
       ).then((response) => (
-        console.log(response.body)
+        console.log(response)
       ));
     },
     [password, username],
@@ -26,7 +26,7 @@ function LoginPage(props) {
         password,
         username
       ).then((response) => (
-        console.log(response.body)
+        console.log(response)
       ));
     },
     [password, username],
