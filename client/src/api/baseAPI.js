@@ -4,8 +4,8 @@ export const API_URI = isDev
   ? 'http://localhost:8081'
   : 'http://trackhours.co';
 
-export const fetchImpl = async (path, vars) => (
-  fetch(
+export const fetchImpl = async (path, vars) => {
+  const response = await fetch(
     API_URI + path,
     {
       body: vars != null ? JSON.stringify(vars) : undefined,
@@ -13,5 +13,6 @@ export const fetchImpl = async (path, vars) => (
       method: vars != null ? 'POST' : 'GET',
       mode: 'cors',
     },
-  )
-);
+  );
+  return await response.json();
+};

@@ -6,28 +6,30 @@ import Page from './component/Page';
 
 import {fetchCreateAccount, fetchLogin} from './api/login';
 
-function LoginPage(props) {
+function LoginPage() {
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
   const createAccount = useCallback(
-    () => {
-      fetchCreateAccount(
+    async () => {
+      const {error} = await fetchCreateAccount(
         password,
         username
-      ).then((response) => (
-        console.log(response)
-      ));
+      );
+      if (!error) {
+        window.location.reload();
+      }
     },
     [password, username],
   );
   const login = useCallback(
-    () => {
-      fetchLogin(
+    async () => {
+      const {error} = await fetchLogin(
         password,
         username
-      ).then((response) => (
-        console.log(response)
-      ));
+      );
+      if (!error) {
+        window.location.reload();
+      }
     },
     [password, username],
   );
@@ -87,4 +89,4 @@ const Title = styled.div`
   width: 100%;
 `;
 
-export default LoginPage;
+export default React.memo(LoginPage);

@@ -1,7 +1,7 @@
 import {fetchImpl} from './baseAPI';
 
-export const fetchCreateAccount = (password, username) => (
-  fetchImpl(
+export const fetchCreateAccount = async (password, username) => (
+  await fetchImpl(
     '/api/account_creation',
     {
       password,
@@ -10,8 +10,8 @@ export const fetchCreateAccount = (password, username) => (
   )
 );
 
-export const fetchLogin = (password, username) => (
-  fetchImpl(
+export const fetchLogin = async (password, username) => (
+  await fetchImpl(
     '/api/login',
     {
       password,
