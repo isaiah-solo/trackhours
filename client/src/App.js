@@ -5,7 +5,7 @@ import LoginPage from './login/LoginPage';
 import Page from './component/Page';
 import {useFetchInitialData} from './api/useFetchInitialData';
 
-const App = (props) => {
+function App(props) {
   const {
     error,
     isLoading,
