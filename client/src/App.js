@@ -1,4 +1,4 @@
-// @flow
+// @flow strict
 
 import React, {useCallback} from 'react';
 
@@ -6,6 +6,10 @@ import HomePage from './home/HomePage';
 import LoginPage from './login/LoginPage';
 import Page from './component/Page';
 import Query from './component/Query';
+
+type Response = {
+  is_logged_in: boolean,
+};
 
 type Props = {};
 
@@ -19,7 +23,7 @@ function App() {
     [],
   );
   const successRenderer = useCallback(
-    ({is_logged_in: isLoggedIn}) => {
+    ({is_logged_in: isLoggedIn}: Response) => {
       return isLoggedIn ? <HomePage /> : <LoginPage />
     },
     [],

@@ -4,16 +4,16 @@ import {useCallback, useEffect, useState} from 'react';
 
 import {fetchImpl} from './baseAPI';
 
-type InitialData = {
-  data: ?{},
+type InitialData<T> = {
+  data: ?T,
   error: ?Error,
   isLoading: boolean,
 };
 
-export const useFetchInitialData = (
+export function useFetchInitialData<T>(
   apiPath: string
-): InitialData => {
-  const [data, setData] = useState(null);
+): InitialData<T> {
+  const [data, setData] = useState<?T>(null);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const fetchData = useCallback(

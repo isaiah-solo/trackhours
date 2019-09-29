@@ -6,7 +6,7 @@ export const API_URI = isDev
   ? 'http://localhost:8081'
   : 'http://trackhours.co';
 
-export const fetchImpl = async (path: string, vars?: {}): {} => {
+export async function fetchImpl<T>(path: string, vars?: {}): Promise<T> {
   const response = await fetch(
     API_URI + path,
     {

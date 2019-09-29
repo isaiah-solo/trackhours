@@ -2,11 +2,15 @@
 
 import {fetchImpl} from './baseAPI';
 
+type Response = {
+  error: Error,
+};
+
 export const fetchCreateAccount = async (
   password: string,
   username: string,
-): {} => (
-  await fetchImpl(
+): Promise<Response> => (
+  await fetchImpl<Response>(
     '/api/account_creation',
     {
       password,
@@ -18,8 +22,8 @@ export const fetchCreateAccount = async (
 export const fetchLogin = async (
   password: string,
   username: string,
-): {} => (
-  await fetchImpl(
+): Promise<Response> => (
+  await fetchImpl<Response>(
     '/api/login',
     {
       password,

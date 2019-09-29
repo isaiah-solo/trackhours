@@ -1,13 +1,8 @@
+// @flow strict
+
+import type {Element, Node} from 'react';
 import React from 'react';
 import styled from 'styled-components'
-
-function Page({children}) {
-  return (
-    <Root>
-      {children}
-    </Root>
-  );
-};
 
 const Root = styled.div`
   background-color: #202020;
@@ -19,4 +14,18 @@ const Root = styled.div`
   width: 100vw;
 `;
 
-export default Page;
+type Props = {
+  children?: Node,
+};
+
+function Page(
+  {children}: Props
+): Element<typeof Root> {
+  return (
+    <Root>
+      {children}
+    </Root>
+  );
+};
+
+export default React.memo<Props>(Page);
