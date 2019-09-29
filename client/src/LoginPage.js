@@ -21,22 +21,28 @@ function LoginPage(props) {
     ),
     [setUsername],
   );
-  const createAccount = () => {
-    fetchCreateAccount(
-      password,
-      username
-    ).then((response) => (
-      console.log(response.body)
-    ));
-  };
-  const login = () => {
-    fetchLogin(
-      password,
-      username
-    ).then((response) => (
-      console.log(response.body)
-    ));
-  };
+  const createAccount = useCallback(
+    () => {
+      fetchCreateAccount(
+        password,
+        username
+      ).then((response) => (
+        console.log(response.body)
+      ));
+    },
+    [password, username],
+  );
+  const login = useCallback(
+    () => {
+      fetchLogin(
+        password,
+        username
+      ).then((response) => (
+        console.log(response.body)
+      ));
+    },
+    [password, username],
+  );
   return (
     <Page>
       <Content>
