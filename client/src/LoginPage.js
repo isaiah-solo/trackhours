@@ -4,6 +4,7 @@ import styled from 'styled-components'
 import CredentialInput from './component/CredentialInput';
 import Page from './component/Page';
 import PageItemCentered from './component/PageItemCentered';
+import TextTitle from './component/TextTitle';
 
 import {fetchCreateAccount, fetchLogin} from './api/login';
 
@@ -38,7 +39,7 @@ function LoginPage() {
     <Page>
       <PageItemCentered>
         <Content>
-          <Title>trackhours</Title>
+          <TextTitle>trackhours</TextTitle>
           <CredentialInput
             onChange={setUsername}
             placeholder="username"
