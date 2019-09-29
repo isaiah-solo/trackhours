@@ -38,12 +38,11 @@ function LoginPage(props) {
         <CredentialInput
           onChange={setUsername}
           placeholder="username"
-          type="text"
           value={username} />
         <CredentialInput
           onChange={setPassword}
           placeholder="password"
-          type="password"
+          password
           value={password} />
         <Button onClick={login}>
           Login

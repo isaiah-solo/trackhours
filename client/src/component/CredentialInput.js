@@ -1,7 +1,7 @@
 import React, {useCallback} from 'react';
 import styled from 'styled-components'
 
-function CredentialInput({onChange, placeholder, type, value}) {
+function CredentialInput({onChange, password = false, placeholder, value}) {
   const onInputChange = useCallback(
     (e) => (
       onChange(e.target.value)
@@ -12,7 +12,7 @@ function CredentialInput({onChange, placeholder, type, value}) {
     <Input
       onChange={onInputChange}
       placeholder={placeholder}
-      type={type}
+      type={password ? 'password' : 'text'}
       value={value} />
   );
 };
