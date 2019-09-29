@@ -42,11 +42,11 @@ function LoginPage() {
           <TextTitle>trackhours</TextTitle>
           <CredentialInput
             onChange={setUsername}
-            placeholder="username"
+            placeholder="Username"
             value={username} />
           <CredentialInput
             onChange={setPassword}
-            placeholder="password"
+            placeholder="Password"
             password
             value={password} />
           <Button onClick={login}>
