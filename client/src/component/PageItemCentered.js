@@ -10,11 +10,12 @@ function PageItemCentered({children}) {
 };
 
 const Root = styled.div`
+  align-items: center;
   background-color: #202020;
   box-sizing: border-box;
   color: white;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   height: fit-content;
   position: relative;
   left: 50%;

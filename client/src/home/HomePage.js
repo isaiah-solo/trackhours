@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import Page from './component/Page';
+import Page from '../component/Page';
 
 function HomePage(props) {
   return (
