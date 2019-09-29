@@ -175,6 +175,6 @@ func LoginHandler(c *gin.Context) {
     Secure: false,
     HttpOnly: false,
   })
-  //c.SetCookie("trackhours_session_key", sessionKey, 360000, "/", "", false, false)
+  c.SetCookie("trackhours_session_key", sessionKey, 360000, "/", "", false, false)
   c.JSON(http.StatusOK, &successResponse)
 }
