@@ -17,7 +17,7 @@ export function useFetchInitialData<T>(
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const fetchData = useCallback(
-    async () => {
+    async (): Promise<void> => {
       setIsLoading(true);
       try {
         const data = await fetchImpl(apiPath);
@@ -30,7 +30,7 @@ export function useFetchInitialData<T>(
     [],
   );
   useEffect(
-    () => {
+    (): void => {
       fetchData();
     },
     [],
