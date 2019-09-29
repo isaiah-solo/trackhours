@@ -2,12 +2,17 @@ import React from 'react';
 
 import HomePage from './HomePage';
 import LoginPage from './LoginPage';
+import Page from './component/Page';
 import {useFetchInitialData} from './api/useFetchInitialData';
 
 const App = (props) => {
-  const {error, isLoading, response} = useFetchInitialData('/api/check_login');
+  const {
+    error,
+    isLoading,
+    response
+  } = useFetchInitialData('/api/check_login');
   if (isLoading || response === null) {
-    return <div>Loading...</div>;
+    return <Page />;
   } else if (error !== null) {
     return <div>Error: {error.message}</div>;
   }
