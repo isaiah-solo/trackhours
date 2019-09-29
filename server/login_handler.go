@@ -4,7 +4,6 @@ import (
   "encoding/json"
   "io/ioutil"
   "net/http"
-  "fmt"
   "github.com/gin-gonic/gin"
   "github.com/satori/go.uuid"
   "golang.org/x/crypto/bcrypt"
