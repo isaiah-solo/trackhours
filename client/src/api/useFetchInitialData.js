@@ -3,15 +3,15 @@ import {useCallback, useEffect, useState} from 'react';
 import {fetchImpl} from './baseAPI';
 
 export const useFetchInitialData = (apiPath) => {
+  const [data, setData] = useState(null);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [response, setResponse] = useState(null);
   const fetchData = useCallback(
     async () => {
       setIsLoading(true);
       try {
-        const body = await fetchImpl(apiPath);
-        setResponse(body);
+        const data = await fetchImpl(apiPath);
+        setData(data);
         setIsLoading(false);
       } catch (error) {
         setError(error);
@@ -26,8 +26,8 @@ export const useFetchInitialData = (apiPath) => {
     [],
   );
   return {
+    data,
     error,
     isLoading,
-    response,
   };
 };
