@@ -9,18 +9,6 @@ import {fetchCreateAccount, fetchLogin} from './api';
 function LoginPage(props) {
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
-  const handleSetPassword = useCallback(
-    (e) => (
-      setPassword(e.target.value)
-    ),
-    [setPassword],
-  );
-  const handleSetUsername = useCallback(
-    (e) => (
-      setUsername(e.target.value)
-    ),
-    [setUsername],
-  );
   const createAccount = useCallback(
     () => {
       fetchCreateAccount(
@@ -48,12 +36,12 @@ function LoginPage(props) {
       <Content>
         <Title>trackhours</Title>
         <CredentialInput
-          onChange={handleSetUsername}
+          onChange={setUsername}
           placeholder="username"
           type="text"
           value={username} />
         <CredentialInput
-          onChange={handleSetPassword}
+          onChange={setPassword}
           placeholder="password"
           type="password"
           value={password} />

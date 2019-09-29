@@ -1,10 +1,16 @@
-import React from 'react';
+import React, {useCallback} from 'react';
 import styled from 'styled-components'
 
 function CredentialInput({onChange, placeholder, type, value}) {
+  const onInputChange = useCallback(
+    (e) => (
+      onChange(e.target.value)
+    ),
+    [onChange],
+  );
   return (
     <Input
-      onChange={onChange}
+      onChange={onInputChange}
       placeholder={placeholder}
       type={type}
       value={value} />
