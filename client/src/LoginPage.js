@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import CredentialInput from './component/CredentialInput';
 import Page from './component/Page';
 
-import {fetchCreateAccount, fetchLogin} from './api';
+import {fetchCreateAccount, fetchLogin} from './api/login';
 
 function LoginPage(props) {
   const [password, setPassword] = useState('');
