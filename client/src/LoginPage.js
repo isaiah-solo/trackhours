@@ -83,13 +83,4 @@ const Content = styled.div`
   flex-direction: column;
 `;
 
-const Title = styled.div`
-  box-sizing: border-box;
-  color: white;
-  font-size: 64px;
-  font-weight: bold;
-  text-align: center;
-  width: 100%;
-`;
-
 export default React.memo(LoginPage);
