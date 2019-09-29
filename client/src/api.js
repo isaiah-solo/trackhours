@@ -1,4 +1,5 @@
-const API_URI = process.env.NODE_ENV === 'development'
+const isDev = process.env.NODE_ENV === 'development';
+const API_URI = isDev
   ? 'http://localhost:8081'
   : 'http://trackhours.co';
 

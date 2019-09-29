@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import styled from 'styled-components'
 
 import CredentialInput from './component/CredentialInput';
@@ -9,10 +9,18 @@ import {fetchLogin} from './api';
 function LoginPage(props) {
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
-  const handleSetPassword = (e) =>
-    setPassword(e.target.value);
-  const handleSetUsername = (e) =>
-    setUsername(e.target.value);
+  const handleSetPassword = useCallback(
+    (e) => (
+      setPassword(e.target.value)
+    ),
+    [setPassword],
+  );
+  const handleSetUsername = useCallback(
+    (e) => (
+      setUsername(e.target.value)
+    ),
+    [setUsername],
+  );
   const login = () => {
     fetchLogin(
       password,
@@ -31,7 +39,11 @@ function LoginPage(props) {
         method: 'POST',
         mode: 'no-cors',
       },
-    ).then((response) => {console.log(response.body)});
+    ).then(
+      (response) => {
+        console.log(response.body)
+      }
+    );
   };
   return (
     <Page>
