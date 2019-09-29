@@ -3,32 +3,34 @@ const API_URI = isDev
   ? 'http://localhost:8081'
   : 'http://trackhours.co';
 
-export const fetchCreateAccount = (password, username) => (
+const fetchImpl = (path, vars) => (
   fetch(
-    `${API_URI}/api/account_creation`,
+    API_URI + path,
     {
-      body: JSON.stringify({
-        password,
-        username,
-      }),
+      body: vars != null ? JSON.stringify(vars) : undefined,
       credentials: 'same-origin',
-      method: 'POST',
+      method: vars != null ? 'POST' : 'GET',
       mode: 'no-cors',
     },
   )
 );
 
-export const fetchLogin = (password, username) => (
-  fetch(
-    `${API_URI}/api/login`,
+export const fetchCreateAccount = (password, username) => (
+  fetchImpl(
+    '/api/account_creation',
     {
-      body: JSON.stringify({
-        password,
-        username,
-      }),
-      credentials: 'same-origin',
-      method: 'POST',
-      mode: 'no-cors',
-    }
+      password,
+      username,
+    },
+  )
+);
+
+export const fetchLogin = (password, username) => (
+  fetchImpl(
+    '/api/login',
+    {
+      password,
+      username,
+    },
   )
 );
