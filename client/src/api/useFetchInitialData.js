@@ -1,8 +1,18 @@
+// @flow strict
+
 import {useCallback, useEffect, useState} from 'react';
 
 import {fetchImpl} from './baseAPI';
 
-export const useFetchInitialData = (apiPath) => {
+type InitialData = {
+  data: ?{},
+  error: ?Error,
+  isLoading: boolean,
+};
+
+export const useFetchInitialData = (
+  apiPath: string
+): InitialData => {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);

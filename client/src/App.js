@@ -1,3 +1,5 @@
+// @flow
+
 import React, {useCallback} from 'react';
 
 import HomePage from './home/HomePage';
@@ -5,9 +7,15 @@ import LoginPage from './login/LoginPage';
 import Page from './component/Page';
 import Query from './component/Query';
 
+type Props = {};
+
 function App() {
   const errorRenderer = useCallback(
-    (error) => <div>Error: {error.message}</div>,
+    (error) => (
+      <div>
+        Error
+      </div>
+    ),
     [],
   );
   const successRenderer = useCallback(
@@ -25,4 +33,4 @@ function App() {
   );
 };
 
-export default React.memo(App);
+export default React.memo<Props>(App);
