@@ -37,7 +37,7 @@ var eventNames = [...]string{
 func main() {
   router := gin.Default()
   api := router.Group("/api")
-  api.GET("/checklogin", CheckLoginHandler)
+  api.GET("/check_login", CheckLoginHandler)
   api.POST("/account_creation", AccountCreationHandler)
   api.POST("/login", LoginHandler)
   router.Run(":8081")
