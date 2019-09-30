@@ -1,12 +1,22 @@
-import React from 'react';
+// @flow strict
+
+import type {Node} from 'react';
+
 import {useFetchInitialData} from '../api/useFetchInitialData';
 
-function Query({
+type Props<T> = {
+  apiPath: string,
+  errorRenderer: Error => Node,
+  loadingComponent: Node,
+  successRenderer: T => Node,
+};
+
+function Query<T>({
   apiPath,
   errorRenderer,
   loadingComponent,
   successRenderer,
-}) {
+}: Props<T>) {
   const {
     data,
     error,
@@ -21,4 +31,4 @@ function Query({
   }
 };
 
-export default React.memo(Query);
+export default Query;
