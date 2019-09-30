@@ -1,12 +1,13 @@
-// @flow strict
-
 export const isDev = process.env.NODE_ENV === 'development';
 
 export const API_URI = isDev
   ? 'http://localhost:8081'
   : 'http://trackhours.co';
 
-export async function fetchImpl<T>(path: string, vars?: {}): Promise<T> {
+export const fetchImpl = async (
+  path,
+  vars,
+) => {
   const response = await fetch(
     API_URI + path,
     {

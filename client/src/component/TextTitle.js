@@ -1,8 +1,16 @@
-// @flow strict
-
-import type {Element, Node} from 'react';
 import React from 'react';
 import styled from 'styled-components'
+
+function TextTitle({
+  children,
+  color = 'white'
+}) {
+  return (
+    <Root color={color}>
+      {children}
+    </Root>
+  );
+};
 
 const Root = styled.div`
   box-sizing: border-box;
@@ -13,19 +21,4 @@ const Root = styled.div`
   width: 100%;
 `;
 
-type Props = {
-  children?: Node,
-  color?: string,
-};
-
-function TextTitle(
-  {children, color = 'white'}: Props,
-): Element<typeof Root> {
-  return (
-    <Root color={color}>
-      {children}
-    </Root>
-  );
-};
-
-export default React.memo<Props>(TextTitle);
+export default React.memo(TextTitle);

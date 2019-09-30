@@ -1,8 +1,20 @@
-// @flow strict
-
-import type {Element, Node} from 'react';
 import React from 'react';
 import styled from 'styled-components'
+
+function Button({
+  children,
+  onClick,
+  padding = '0',
+  width = '100%'
+}) {
+  return (
+    <Root onClick={onClick}
+      padding={padding}
+      width={width}>
+      {children}
+    </Root>
+  );
+};
 
 const Root = styled.div`
   background-color: #ee0060;
@@ -19,26 +31,4 @@ const Root = styled.div`
   width: ${({width}) => width};
 `;
 
-type Props = {
-  children: Node,
-  onClick: () => (void | Promise<void>),
-  padding: string,
-  width: string,
-};
-
-function Button({
-  children,
-  onClick,
-  padding = '0',
-  width = '100%'
-}: Props): Element<typeof Root> {
-  return (
-    <Root onClick={onClick}
-      padding={padding}
-      width={width}>
-      {children}
-    </Root>
-  );
-};
-
-export default React.memo<Props>(Button);
+export default React.memo(Button);

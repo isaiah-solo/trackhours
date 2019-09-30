@@ -1,6 +1,3 @@
-// @flow strict
-
-import type {Element} from 'react';
 import React, {useCallback, useState} from 'react';
 
 import Button from '../component/Button';
@@ -11,13 +8,11 @@ import TextTitle from '../component/TextTitle';
 
 import {fetchCreateAccount, fetchLogin} from '../api/login';
 
-type Props = {};
-
-function LoginPage(): Element<typeof Page> {
+function LoginPage() {
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
   const createAccount = useCallback(
-    async (): Promise<void> => {
+    async () => {
       const {error} = await fetchCreateAccount(
         password,
         username
@@ -29,7 +24,7 @@ function LoginPage(): Element<typeof Page> {
     [password, username],
   );
   const login = useCallback(
-    async (): Promise<void> => {
+    async () => {
       const {error} = await fetchLogin(
         password,
         username
@@ -68,4 +63,4 @@ function LoginPage(): Element<typeof Page> {
   );
 };
 
-export default React.memo<Props>(LoginPage);
+export default React.memo(LoginPage);

@@ -1,8 +1,26 @@
-// @flow strict
-
-import type {Element} from 'react';
 import React, {useCallback} from 'react';
 import styled from 'styled-components'
+
+function CredentialInput({
+  onChange,
+  password = false,
+  placeholder,
+  value
+}) {
+  const onInputChange = useCallback(
+    (e) => (
+      onChange(e.target.value)
+    ),
+    [onChange],
+  );
+  return (
+    <Root
+      onChange={onInputChange}
+      placeholder={placeholder}
+      type={password ? 'password' : 'text'}
+      value={value} />
+  );
+};
 
 const Root = styled.input`
   border-radius: 4px;
@@ -17,32 +35,4 @@ const Root = styled.input`
   }
 `;
 
-type Props = {
-  onChange: string => void,
-  password?: boolean,
-  placeholder: string,
-  value: string,
-};
-
-function CredentialInput({
-  onChange,
-  password = false,
-  placeholder,
-  value
-}: Props): Element<typeof Root> {
-  const onInputChange = useCallback(
-    (e: SyntheticInputEvent<>): void => (
-      onChange(e.target.value)
-    ),
-    [onChange],
-  );
-  return (
-    <Root
-      onChange={onInputChange}
-      placeholder={placeholder}
-      type={password ? 'password' : 'text'}
-      value={value} />
-  );
-};
-
-export default React.memo<Props>(CredentialInput);
+export default React.memo(CredentialInput);

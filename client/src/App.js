@@ -1,17 +1,9 @@
-// @flow strict
-
 import React, {useCallback} from 'react';
 
 import HomePage from './home/HomePage';
 import LoginPage from './login/LoginPage';
 import Page from './component/Page';
 import Query from './component/Query';
-
-type Response = {
-  is_logged_in: boolean,
-};
-
-type Props = {};
 
 function App() {
   const errorRenderer = useCallback(
@@ -23,9 +15,11 @@ function App() {
     [],
   );
   const successRenderer = useCallback(
-    ({is_logged_in: isLoggedIn}: Response) => {
-      return isLoggedIn ? <HomePage /> : <LoginPage />
-    },
+    ({is_logged_in: isLoggedIn}) => (
+      isLoggedIn
+        ? <HomePage />
+        : <LoginPage />
+    ),
     [],
   );
   return (
@@ -37,4 +31,4 @@ function App() {
   );
 };
 
-export default React.memo<Props>(App);
+export default React.memo(App);
