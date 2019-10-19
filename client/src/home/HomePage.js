@@ -33,7 +33,7 @@ const Content = styled.div`
 `;
 
 const Sidebar = styled.div`
-  background-color: #202020;
+  background-color: #2C2C2C;
   box-sizing: border-box;
   color: white;
   display: flex;
