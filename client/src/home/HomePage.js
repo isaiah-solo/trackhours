@@ -1,13 +1,22 @@
 // @flow strict
 
+import type {Element} from 'react';
+
 import React, {useCallback, useState} from 'react';
 import styled from 'styled-components';
 
+import HomeTab from './HomeTab';
 import Page from '../component/Page';
+import TimesheetsTab from './TimesheetsTab';
+
+const tabMap = {
+  home: HomeTab,
+  timesheets: TimesheetsTab,
+};
 
 type Tab = 'home' | 'timesheets';
 
-function HomePage() {
+function HomePage(): Element<typeof Page> {
   const [tab, setTab] = useState<Tab>('home');
   const setHomeTab = useCallback(
     (): void => {
@@ -21,6 +30,7 @@ function HomePage() {
     },
     [],
   );
+  const TabRenderer = tabMap[tab];
   return (
     <Page>
       <Sidebar>
@@ -32,7 +42,7 @@ function HomePage() {
         </SidebarItem>
       </Sidebar>
       <Content>
-        {tab}
+        <TabRenderer />
       </Content>
     </Page>
   );
@@ -47,6 +57,7 @@ const Content = styled.div`
   flex-direction: column;
   flex-grow: 1;
   height: 100%;
+  padding: 20px;
 `;
 
 const Sidebar = styled.div`
