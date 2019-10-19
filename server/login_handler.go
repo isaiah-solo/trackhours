@@ -103,12 +103,30 @@ func CheckLoginHandler(c *gin.Context) {
 	c.Header("Access-Control-Allow-Credentials", "true")
 	c.Header("Access-Control-Allow-Origin", "http://trackhours.co")
 	c.Header("Access-Control-Allow-Origin", "http://localhost:3000")
-	_, err := c.Cookie("trackhours_session_key")
-	isLoggedIn := true
+	cookie, err := c.Cookie("trackhours_session_key")
 	if err != nil {
-		isLoggedIn = false
+		c.JSON(http.StatusOK, gin.H{"is_logged_in": false, "error": err})
+		return
 	}
-	c.JSON(http.StatusOK, gin.H{"is_logged_in": isLoggedIn, "error": err})
+	db := EstablishConnection()
+	defer db.Close()
+	rows, err := db.Query("SELECT session_key FROM user_session where session_key = ?", cookie)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, &loginInternalErrorResponse)
+		return
+	}
+	if rows.Next() != true {
+		c.JSON(http.StatusOK, gin.H{"is_logged_in": false, "error": nil})
+		return
+	}
+	var sessionKey string
+	if err := rows.Scan(
+		&sessionKey,
+	); err != nil {
+		c.JSON(http.StatusInternalServerError, &loginInternalErrorResponse)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"is_logged_in": cookie == sessionKey, "error": nil})
 }
 
 func LoginHandler(c *gin.Context) {
