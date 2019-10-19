@@ -9,6 +9,8 @@ import HomeTab from './HomeTab';
 import Page from '../component/Page';
 import TimesheetsTab from './TimesheetsTab';
 
+import {fetchLogout} from '../api/login';
+
 const tabMap = {
   home: HomeTab,
   timesheets: TimesheetsTab,
@@ -18,13 +20,22 @@ type Tab = 'home' | 'timesheets';
 
 function HomePage(): Element<typeof Page> {
   const [tab, setTab] = useState<Tab>('home');
-  const setHomeTab = useCallback(
+  const logout = useCallback(
+    async (): Promise<void> => {
+      const {error} = await fetchLogout();
+      if (!error) {
+        window.location.reload();
+      }
+    },
+    [],
+  );
+  const goToHomeTab = useCallback(
     (): void => {
       setTab('home');
     },
     [],
   );
-  const setTimesheetsTab = useCallback(
+  const goToTimesheetsTab = useCallback(
     (): void => {
       setTab('timesheets');
     },
@@ -34,11 +45,14 @@ function HomePage(): Element<typeof Page> {
   return (
     <Page>
       <Sidebar>
-        <SidebarItem onClick={setHomeTab}>
+        <SidebarItem onClick={goToHomeTab}>
           Home
         </SidebarItem>
-        <SidebarItem onClick={setTimesheetsTab}>
+        <SidebarItem onClick={goToTimesheetsTab}>
           Timesheets
+        </SidebarItem>
+        <SidebarItem onClick={logout}>
+          Logout
         </SidebarItem>
       </Sidebar>
       <Content>

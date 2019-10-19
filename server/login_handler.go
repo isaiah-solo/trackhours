@@ -184,16 +184,14 @@ func LoginHandler(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, &loginInternalErrorResponse)
 		return
 	}
-	// Set cookie
-	http.SetCookie(c.Writer, &http.Cookie{
-		Name:     "trackhours_session_key",
-		Value:    sessionKey,
-		MaxAge:   360000,
-		Path:     "/",
-		Domain:   "trackhours.co",
-		Secure:   false,
-		HttpOnly: false,
-	})
 	c.SetCookie("trackhours_session_key", sessionKey, 360000, "/", "", false, false)
+	c.JSON(http.StatusOK, &successResponse)
+}
+
+func LogoutHandler(c *gin.Context) {
+	c.Header("Access-Control-Allow-Credentials", "true")
+	c.Header("Access-Control-Allow-Origin", "http://trackhours.co")
+	c.Header("Access-Control-Allow-Origin", "http://localhost:3000")
+	c.SetCookie("trackhours_session_key", "", 360000, "/", "", false, false)
 	c.JSON(http.StatusOK, &successResponse)
 }

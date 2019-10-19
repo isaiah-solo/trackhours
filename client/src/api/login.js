@@ -31,3 +31,10 @@ export const fetchLogin = async (
     },
   )
 );
+
+export const fetchLogout = async (
+): Promise<Response> => (
+  await fetchImpl<Response>(
+    '/api/logout',
+  )
+);

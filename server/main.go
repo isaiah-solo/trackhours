@@ -38,6 +38,7 @@ func main() {
 	router := gin.Default()
 	api := router.Group("/api")
 	api.GET("/check_login", CheckLoginHandler)
+	api.GET("/logout", LogoutHandler)
 	api.POST("/account_creation", AccountCreationHandler)
 	api.POST("/login", LoginHandler)
 	router.Run(":8081")
