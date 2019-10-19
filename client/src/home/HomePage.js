@@ -1,21 +1,38 @@
-import React from 'react';
+// @flow strict
+
+import React, {useCallback, useState} from 'react';
 import styled from 'styled-components';
 
 import Page from '../component/Page';
 
-function HomePage(props) {
+type Tab = 'home' | 'timesheets';
+
+function HomePage() {
+  const [tab, setTab] = useState<Tab>('home');
+  const setHomeTab = useCallback(
+    (): void => {
+      setTab('home');
+    },
+    [],
+  );
+  const setTimesheetsTab = useCallback(
+    (): void => {
+      setTab('timesheets');
+    },
+    [],
+  );
   return (
     <Page>
       <Sidebar>
-        <SidebarItem>
+        <SidebarItem onClick={setHomeTab}>
           Home
         </SidebarItem>
-        <SidebarItem>
+        <SidebarItem onClick={setTimesheetsTab}>
           Timesheets
         </SidebarItem>
       </Sidebar>
       <Content>
-        Content
+        {tab}
       </Content>
     </Page>
   );
