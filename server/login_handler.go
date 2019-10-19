@@ -2,11 +2,15 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/mysql"
 	uuid "github.com/satori/go.uuid"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -23,6 +27,11 @@ type LoginResponse struct {
 type User struct {
 	Password string `json:"password"`
 	Username string `json:"username"`
+}
+
+type UserSession struct {
+	OwnerUsername string `json:"owner_username"`
+	SessionKey    string `json:"session_key"`
 }
 
 var loginInternalErrorResponse = LoginResponse{
@@ -45,7 +54,18 @@ func AccountCreationHandler(c *gin.Context) {
 	c.Header("Access-Control-Allow-Credentials", "true")
 	c.Header("Access-Control-Allow-Origin", "http://trackhours.co")
 	c.Header("Access-Control-Allow-Origin", "http://localhost:3000")
-	db := EstablishConnection()
+	connection := fmt.Sprintf(
+		"%s:%s@/%s",
+		os.Getenv("MYSQL_USERNAME_CREDENTIAL"),
+		os.Getenv("MYSQL_PASSWORD_CREDENTIAL"),
+		os.Getenv("MYSQL_DATABASE_CREDENTIAL"),
+	)
+	db, err := gorm.Open("mysql", connection)
+	db.SingularTable(true)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, &loginInternalErrorResponse)
+		return
+	}
 	defer db.Close()
 	body, err := ioutil.ReadAll(c.Request.Body)
 	if err != nil {
@@ -66,20 +86,7 @@ func AccountCreationHandler(c *gin.Context) {
 		Password: string(hash),
 		Username: accountInformation.Username,
 	}
-	userInsert, err := db.Prepare(
-		"INSERT INTO user (password, username) VALUES (?, ?)",
-	)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, &loginInternalErrorResponse)
-		return
-	}
-	if _, err := userInsert.Exec(
-		user.Password,
-		user.Username,
-	); err != nil {
-		c.JSON(http.StatusInternalServerError, &loginInternalErrorResponse)
-		return
-	}
+	db.Create(&user)
 	// Generate user session key
 	u, err := uuid.NewV4()
 	if err != nil {
@@ -87,13 +94,11 @@ func AccountCreationHandler(c *gin.Context) {
 		return
 	}
 	sessionKey := u.String()
-	sessionKeyInsert, err := db.Prepare(
-		"INSERT INTO user_session (owner_username, session_key) VALUES (?, ?)",
-	)
-	if _, err := sessionKeyInsert.Exec(user.Username, sessionKey); err != nil {
-		c.JSON(http.StatusInternalServerError, &loginInternalErrorResponse)
-		return
+	userSession := UserSession{
+		OwnerUsername: user.Username,
+		SessionKey:    sessionKey,
 	}
+	db.Create(&userSession)
 	// Set cookie
 	c.SetCookie("trackhours_session_key", sessionKey, 360000, "/", "", false, false)
 	c.JSON(http.StatusOK, &successResponse)
@@ -104,37 +109,32 @@ func CheckLoginHandler(c *gin.Context) {
 	c.Header("Access-Control-Allow-Origin", "http://trackhours.co")
 	c.Header("Access-Control-Allow-Origin", "http://localhost:3000")
 	cookie, err := c.Cookie("trackhours_session_key")
-	if err != nil {
+	if err != nil || cookie == "" {
 		c.JSON(http.StatusOK, gin.H{"is_logged_in": false, "error": err})
 		return
 	}
-	db := EstablishConnection()
-	defer db.Close()
-	rows, err := db.Query("SELECT session_key FROM user_session where session_key = ?", cookie)
+	connection := fmt.Sprintf(
+		"%s:%s@/%s",
+		os.Getenv("MYSQL_USERNAME_CREDENTIAL"),
+		os.Getenv("MYSQL_PASSWORD_CREDENTIAL"),
+		os.Getenv("MYSQL_DATABASE_CREDENTIAL"),
+	)
+	db, err := gorm.Open("mysql", connection)
+	db.SingularTable(true)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, &loginInternalErrorResponse)
 		return
 	}
-	if rows.Next() != true {
-		c.JSON(http.StatusOK, gin.H{"is_logged_in": false, "error": nil})
-		return
-	}
-	var sessionKey string
-	if err := rows.Scan(
-		&sessionKey,
-	); err != nil {
-		c.JSON(http.StatusInternalServerError, &loginInternalErrorResponse)
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{"is_logged_in": cookie == sessionKey, "error": nil})
+	defer db.Close()
+	var userSession UserSession
+	db.First(&userSession, "session_key = ?", cookie)
+	c.JSON(http.StatusOK, gin.H{"is_logged_in": cookie == userSession.SessionKey, "error": nil})
 }
 
 func LoginHandler(c *gin.Context) {
 	c.Header("Access-Control-Allow-Credentials", "true")
 	c.Header("Access-Control-Allow-Origin", "http://trackhours.co")
 	c.Header("Access-Control-Allow-Origin", "http://localhost:3000")
-	db := EstablishConnection()
-	defer db.Close()
 	body, err := ioutil.ReadAll(c.Request.Body)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, &loginInternalErrorResponse)
@@ -145,23 +145,22 @@ func LoginHandler(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, &loginInternalErrorResponse)
 		return
 	}
-	rows := PerformQuery(
-		db,
-		"SELECT password, username FROM user WHERE username = ?",
-		accountInformation.Username,
+
+	connection := fmt.Sprintf(
+		"%s:%s@/%s",
+		os.Getenv("MYSQL_USERNAME_CREDENTIAL"),
+		os.Getenv("MYSQL_PASSWORD_CREDENTIAL"),
+		os.Getenv("MYSQL_DATABASE_CREDENTIAL"),
 	)
-	if rows.Next() != true {
-		c.JSON(http.StatusUnauthorized, &loginInvalidUserResponse)
-		return
-	}
-	var user User
-	if err := rows.Scan(
-		&user.Password,
-		&user.Username,
-	); err != nil {
+	db, err := gorm.Open("mysql", connection)
+	db.SingularTable(true)
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, &loginInternalErrorResponse)
 		return
 	}
+	defer db.Close()
+	var user User
+	db.First(&user, "username = ?", accountInformation.Username)
 	// Compare credentials with those stored in DB
 	if err := bcrypt.CompareHashAndPassword(
 		[]byte(user.Password),
@@ -177,13 +176,11 @@ func LoginHandler(c *gin.Context) {
 		return
 	}
 	sessionKey := u.String()
-	sessionKeyInsert, err := db.Prepare(
-		"INSERT INTO user_session (owner_username, session_key) VALUES (?, ?)",
-	)
-	if _, err := sessionKeyInsert.Exec(user.Username, sessionKey); err != nil {
-		c.JSON(http.StatusInternalServerError, &loginInternalErrorResponse)
-		return
+	userSession := UserSession{
+		OwnerUsername: user.Username,
+		SessionKey:    sessionKey,
 	}
+	db.Create(&userSession)
 	c.SetCookie("trackhours_session_key", sessionKey, 360000, "/", "", false, false)
 	c.JSON(http.StatusOK, &successResponse)
 }
