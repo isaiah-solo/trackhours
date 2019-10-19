@@ -8,10 +8,10 @@ function HomePage(props) {
     <Page>
       <Sidebar>
         <SidebarItem>
-          Button 1
+          Home
         </SidebarItem>
         <SidebarItem>
-          Button 2
+          Timesheets
         </SidebarItem>
       </Sidebar>
       <Content>
@@ -44,11 +44,17 @@ const Sidebar = styled.div`
 `;
 
 const SidebarItem = styled.div`
+  align-items: center;
   background-color: #ee0060;
+  border-radius: 8px;
   box-sizing: border-box;
   color: white;
+  cursor: pointer;
+  display: flex;
+  font-weight: bold;
   height: 50px;
   margin-top: 20px;
+  padding: 10px;
   width: 100%;
   &:first-child {
     margin-top: 0;
