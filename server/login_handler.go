@@ -2,14 +2,11 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
-	"os"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	uuid "github.com/satori/go.uuid"
 	"golang.org/x/crypto/bcrypt"
@@ -54,14 +51,7 @@ func AccountCreationHandler(c *gin.Context) {
 	c.Header("Access-Control-Allow-Credentials", "true")
 	c.Header("Access-Control-Allow-Origin", "http://trackhours.co")
 	c.Header("Access-Control-Allow-Origin", "http://localhost:3000")
-	connection := fmt.Sprintf(
-		"%s:%s@/%s",
-		os.Getenv("MYSQL_USERNAME_CREDENTIAL"),
-		os.Getenv("MYSQL_PASSWORD_CREDENTIAL"),
-		os.Getenv("MYSQL_DATABASE_CREDENTIAL"),
-	)
-	db, err := gorm.Open("mysql", connection)
-	db.SingularTable(true)
+	db, err := EstablishConnection()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, &loginInternalErrorResponse)
 		return
@@ -113,14 +103,7 @@ func CheckLoginHandler(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"is_logged_in": false, "error": err})
 		return
 	}
-	connection := fmt.Sprintf(
-		"%s:%s@/%s",
-		os.Getenv("MYSQL_USERNAME_CREDENTIAL"),
-		os.Getenv("MYSQL_PASSWORD_CREDENTIAL"),
-		os.Getenv("MYSQL_DATABASE_CREDENTIAL"),
-	)
-	db, err := gorm.Open("mysql", connection)
-	db.SingularTable(true)
+	db, err := EstablishConnection()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, &loginInternalErrorResponse)
 		return
@@ -145,15 +128,7 @@ func LoginHandler(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, &loginInternalErrorResponse)
 		return
 	}
-
-	connection := fmt.Sprintf(
-		"%s:%s@/%s",
-		os.Getenv("MYSQL_USERNAME_CREDENTIAL"),
-		os.Getenv("MYSQL_PASSWORD_CREDENTIAL"),
-		os.Getenv("MYSQL_DATABASE_CREDENTIAL"),
-	)
-	db, err := gorm.Open("mysql", connection)
-	db.SingularTable(true)
+	db, err := EstablishConnection()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, &loginInternalErrorResponse)
 		return
