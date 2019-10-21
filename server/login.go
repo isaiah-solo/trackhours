@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
-	"os"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
@@ -31,14 +30,25 @@ type UserSession struct {
 	SessionKey    string `json:"session_key"`
 }
 
+func generateAccountInformation(c *gin.Context) (AccountInformation, error) {
+	var accountInformation AccountInformation
+	body, err := ioutil.ReadAll(c.Request.Body)
+	if err != nil {
+		return accountInformation, err
+	}
+	if err := json.Unmarshal(body, &accountInformation); err != nil {
+		return accountInformation, err
+	}
+	return accountInformation, nil
+}
+
 func generateSessionKey() (string, error) {
 	u, err := uuid.NewV4()
 	return u.String(), err
 }
 
 func AccountCreationHandler(c *gin.Context) {
-	c.Header("Access-Control-Allow-Credentials", "true")
-	c.Header("Access-Control-Allow-Origin", os.Getenv("BACKEND_ORIGIN"))
+	InitHeader(c)
 	db, err := EstablishConnection()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, Response{
@@ -47,15 +57,8 @@ func AccountCreationHandler(c *gin.Context) {
 		return
 	}
 	defer db.Close()
-	body, err := ioutil.ReadAll(c.Request.Body)
+	accountInformation, err := generateAccountInformation(c)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, Response{
-			Error: "Issue parsing body",
-		})
-		return
-	}
-	var accountInformation AccountInformation
-	if err := json.Unmarshal(body, &accountInformation); err != nil {
 		c.JSON(http.StatusInternalServerError, Response{
 			Error: "Issue parsing body json",
 		})
@@ -95,8 +98,7 @@ func AccountCreationHandler(c *gin.Context) {
 }
 
 func CheckLoginHandler(c *gin.Context) {
-	c.Header("Access-Control-Allow-Credentials", "true")
-	c.Header("Access-Control-Allow-Origin", os.Getenv("BACKEND_ORIGIN"))
+	InitHeader(c)
 	cookie, err := c.Cookie("trackhours_session_key")
 	if err != nil || cookie == "" {
 		c.JSON(http.StatusOK, gin.H{"is_logged_in": false, "error": err})
@@ -119,17 +121,9 @@ func CheckLoginHandler(c *gin.Context) {
 }
 
 func LoginHandler(c *gin.Context) {
-	c.Header("Access-Control-Allow-Credentials", "true")
-	c.Header("Access-Control-Allow-Origin", os.Getenv("BACKEND_ORIGIN"))
-	body, err := ioutil.ReadAll(c.Request.Body)
+	InitHeader(c)
+	accountInformation, err := generateAccountInformation(c)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, Response{
-			Error: "Issue parsing body",
-		})
-		return
-	}
-	var accountInformation AccountInformation
-	if err := json.Unmarshal(body, &accountInformation); err != nil {
 		c.JSON(http.StatusInternalServerError, Response{
 			Error: "Issue parsing body json",
 		})
@@ -145,7 +139,6 @@ func LoginHandler(c *gin.Context) {
 	defer db.Close()
 	var user User
 	db.First(&user, "username = ?", accountInformation.Username)
-	// Compare credentials with those stored in DB
 	if err := bcrypt.CompareHashAndPassword(
 		[]byte(user.Password),
 		[]byte(accountInformation.Password),
@@ -155,7 +148,6 @@ func LoginHandler(c *gin.Context) {
 		})
 		return
 	}
-	// Generate user session key
 	sessionKey, err := generateSessionKey()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, Response{
@@ -183,8 +175,7 @@ func LoginHandler(c *gin.Context) {
 }
 
 func LogoutHandler(c *gin.Context) {
-	c.Header("Access-Control-Allow-Credentials", "true")
-	c.Header("Access-Control-Allow-Origin", os.Getenv("BACKEND_ORIGIN"))
+	InitHeader(c)
 	c.SetCookie(
 		"trackhours_session_key",
 		"",

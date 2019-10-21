@@ -34,6 +34,11 @@ var eventNames = [...]string{
 	"start_lunch_event",
 }
 
+func InitHeader(c *gin.Context) {
+	c.Header("Access-Control-Allow-Credentials", "true")
+	c.Header("Access-Control-Allow-Origin", BackendOrigin)
+}
+
 func main() {
 	router := gin.Default()
 	api := router.Group("/api")
