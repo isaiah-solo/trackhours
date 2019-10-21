@@ -34,29 +34,31 @@ function App() {
   const successRenderer = useCallback(
     ({is_logged_in: isLoggedIn}: Response): Element<typeof Router> => (
       <Router>
-        <Route exact
-          path='/login'
-          render={({location}): Element<typeof LoginPage | typeof Redirect> => (
-            isLoggedIn
-              ? <Redirect to={{
-                pathname: '/home',
-                state: { from: location }
-              }} />
-              : <LoginPage />
-          )} />
-        <Route exact
-          path='/home'
-          render={({location}): Element<typeof HomePage | typeof Redirect> => (
-            isLoggedIn
-              ? <HomePage />
-              : <Redirect to={{
-                pathname: '/login',
-                state: { from: location }
-              }} />
-          )} />
-        <Redirect to={{
-          pathname: '/home',
-        }} />
+        <Switch>
+          <Route exact
+            path='/login'
+            render={({location}): Element<typeof LoginPage | typeof Redirect> => (
+              isLoggedIn
+                ? <Redirect to={{
+                  pathname: '/home',
+                  state: { from: location }
+                }} />
+                : <LoginPage />
+            )} />
+          <Route exact
+            path='/home'
+            render={({location}): Element<typeof HomePage | typeof Redirect> => (
+              isLoggedIn
+                ? <HomePage />
+                : <Redirect to={{
+                  pathname: '/login',
+                  state: { from: location }
+                }} />
+            )} />
+          <Redirect to={{
+            pathname: '/home',
+          }} />
+        </Switch>
       </Router>
     ),
     [],
