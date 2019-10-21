@@ -76,7 +76,6 @@ func AccountCreationHandler(c *gin.Context) {
 		Username: accountInformation.Username,
 	}
 	db.Create(&user)
-	// Generate user session key
 	sessionKey, err := generateSessionKey()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, Response{
@@ -89,7 +88,6 @@ func AccountCreationHandler(c *gin.Context) {
 		SessionKey:    sessionKey,
 	}
 	db.Create(&userSession)
-	// Set cookie
 	c.SetCookie("trackhours_session_key", sessionKey, 360000, "/", "", false, false)
 	c.JSON(http.StatusOK, Response{
 		Error: "",
