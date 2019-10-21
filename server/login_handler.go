@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
@@ -37,8 +38,7 @@ func generateSessionKey() (string, error) {
 
 func AccountCreationHandler(c *gin.Context) {
 	c.Header("Access-Control-Allow-Credentials", "true")
-	c.Header("Access-Control-Allow-Origin", "http://trackhours.co")
-	c.Header("Access-Control-Allow-Origin", "http://localhost:3000")
+	c.Header("Access-Control-Allow-Origin", os.Getenv("BACKEND_ORIGIN"))
 	db, err := EstablishConnection()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, Response{
@@ -96,8 +96,7 @@ func AccountCreationHandler(c *gin.Context) {
 
 func CheckLoginHandler(c *gin.Context) {
 	c.Header("Access-Control-Allow-Credentials", "true")
-	c.Header("Access-Control-Allow-Origin", "http://trackhours.co")
-	c.Header("Access-Control-Allow-Origin", "http://localhost:3000")
+	c.Header("Access-Control-Allow-Origin", os.Getenv("BACKEND_ORIGIN"))
 	cookie, err := c.Cookie("trackhours_session_key")
 	if err != nil || cookie == "" {
 		c.JSON(http.StatusOK, gin.H{"is_logged_in": false, "error": err})
@@ -121,8 +120,7 @@ func CheckLoginHandler(c *gin.Context) {
 
 func LoginHandler(c *gin.Context) {
 	c.Header("Access-Control-Allow-Credentials", "true")
-	c.Header("Access-Control-Allow-Origin", "http://trackhours.co")
-	c.Header("Access-Control-Allow-Origin", "http://localhost:3000")
+	c.Header("Access-Control-Allow-Origin", os.Getenv("BACKEND_ORIGIN"))
 	body, err := ioutil.ReadAll(c.Request.Body)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, Response{
@@ -186,8 +184,7 @@ func LoginHandler(c *gin.Context) {
 
 func LogoutHandler(c *gin.Context) {
 	c.Header("Access-Control-Allow-Credentials", "true")
-	c.Header("Access-Control-Allow-Origin", "http://trackhours.co")
-	c.Header("Access-Control-Allow-Origin", "http://localhost:3000")
+	c.Header("Access-Control-Allow-Origin", os.Getenv("BACKEND_ORIGIN"))
 	c.SetCookie(
 		"trackhours_session_key",
 		"",
