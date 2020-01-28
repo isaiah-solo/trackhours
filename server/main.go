@@ -43,8 +43,8 @@ func InitHeader(w http.ResponseWriter) {
 
 func main() {
 	http.HandleFunc("/api/check_login", CheckLoginHandler)
-	http.HandleFunc("/logout", LogoutHandler)
-	http.HandleFunc("/account_creation", AccountCreationHandler)
-	http.HandleFunc("/login", LoginHandler)
+	http.HandleFunc("/api/logout", LogoutHandler)
+	http.HandleFunc("/api/account_creation", AccountCreationHandler)
+	http.HandleFunc("/api/login", LoginHandler)
 	log.Fatal(http.ListenAndServe(":8081", nil))
 }

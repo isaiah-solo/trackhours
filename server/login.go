@@ -119,6 +119,14 @@ func AccountCreationHandler(w http.ResponseWriter, r *http.Request) {
 func CheckLoginHandler(w http.ResponseWriter, r *http.Request) {
 	InitHeader(w)
 	cookie, err := r.Cookie("trackhours_session_key")
+	if err != nil {
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(CheckLoginResponse{
+			Error:      err.Error(),
+			IsLoggedIn: false,
+		})
+		return
+	}
 	cookieValue, _ := url.QueryUnescape(cookie.Value)
 	if err != nil || cookieValue == "" {
 		w.WriteHeader(http.StatusOK)
