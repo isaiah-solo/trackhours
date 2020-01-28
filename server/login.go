@@ -218,7 +218,7 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &http.Cookie{
 		Name:     "trackhours_session_key",
 		Value:    "",
-		MaxAge:   360000,
+		MaxAge:   -1,
 		Path:     "/",
 		Domain:   "",
 		Secure:   false,

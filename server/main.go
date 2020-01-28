@@ -36,7 +36,6 @@ var eventNames = [...]string{
 }
 
 func InitHeader(w http.ResponseWriter) {
-	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	w.Header().Set("Access-Control-Allow-Origin", BackendOrigin)
 }
