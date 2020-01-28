@@ -1,7 +1,8 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
+	"log"
+	"net/http"
 )
 
 type Event int
@@ -34,17 +35,16 @@ var eventNames = [...]string{
 	"start_lunch_event",
 }
 
-func InitHeader(c *gin.Context) {
-	c.Header("Access-Control-Allow-Credentials", "true")
-	c.Header("Access-Control-Allow-Origin", BackendOrigin)
+func InitHeader(w http.ResponseWriter) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
+	w.Header().Set("Access-Control-Allow-Origin", BackendOrigin)
 }
 
 func main() {
-	router := gin.Default()
-	api := router.Group("/api")
-	api.GET("/check_login", CheckLoginHandler)
-	api.GET("/logout", LogoutHandler)
-	api.POST("/account_creation", AccountCreationHandler)
-	api.POST("/login", LoginHandler)
-	router.Run(":8081")
+	http.HandleFunc("/api/check_login", CheckLoginHandler)
+	http.HandleFunc("/logout", LogoutHandler)
+	http.HandleFunc("/account_creation", AccountCreationHandler)
+	http.HandleFunc("/login", LoginHandler)
+	log.Fatal(http.ListenAndServe(":8081", nil))
 }

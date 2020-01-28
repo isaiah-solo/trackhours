@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 
-	"github.com/gin-gonic/gin"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	uuid "github.com/satori/go.uuid"
 	"golang.org/x/crypto/bcrypt"
@@ -20,6 +20,11 @@ type Response struct {
 	Error string `json:"error"`
 }
 
+type CheckLoginResponse struct {
+	Error      string `json:"error"`
+	IsLoggedIn bool   `json:"is_logged_in"`
+}
+
 type User struct {
 	Password string `json:"password"`
 	Username string `json:"username"`
@@ -30,9 +35,10 @@ type UserSession struct {
 	SessionKey    string `json:"session_key"`
 }
 
-func generateAccountInformation(c *gin.Context) (AccountInformation, error) {
+func generateAccountInformation(r *http.Request) (AccountInformation, error) {
 	var accountInformation AccountInformation
-	body, err := ioutil.ReadAll(c.Request.Body)
+	body, err := ioutil.ReadAll(r.Body)
+	defer r.Body.Close()
 	if err != nil {
 		return accountInformation, err
 	}
@@ -47,19 +53,21 @@ func generateSessionKey() (string, error) {
 	return u.String(), err
 }
 
-func AccountCreationHandler(c *gin.Context) {
-	InitHeader(c)
+func AccountCreationHandler(w http.ResponseWriter, r *http.Request) {
+	InitHeader(w)
 	db, err := EstablishConnection()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, Response{
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(CheckLoginResponse{
 			Error: "Issue connecting to DB",
 		})
 		return
 	}
 	defer db.Close()
-	accountInformation, err := generateAccountInformation(c)
+	accountInformation, err := generateAccountInformation(r)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, Response{
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(CheckLoginResponse{
 			Error: "Issue parsing body json",
 		})
 		return
@@ -69,7 +77,8 @@ func AccountCreationHandler(c *gin.Context) {
 		bcrypt.MinCost,
 	)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, Response{
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(CheckLoginResponse{
 			Error: "Issue encrypting",
 		})
 		return
@@ -81,7 +90,8 @@ func AccountCreationHandler(c *gin.Context) {
 	db.Create(&user)
 	sessionKey, err := generateSessionKey()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, Response{
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(CheckLoginResponse{
 			Error: "Issue generating session key",
 		})
 		return
@@ -91,7 +101,7 @@ func AccountCreationHandler(c *gin.Context) {
 		SessionKey:    sessionKey,
 	}
 	db.Create(&userSession)
-	http.SetCookie(c.Writer, &http.Cookie{
+	http.SetCookie(w, &http.Cookie{
 		Name:     "trackhours_session_key",
 		Value:    sessionKey,
 		MaxAge:   360000,
@@ -100,46 +110,56 @@ func AccountCreationHandler(c *gin.Context) {
 		Secure:   false,
 		HttpOnly: false,
 	})
-	c.JSON(http.StatusOK, Response{
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(CheckLoginResponse{
 		Error: "",
 	})
 }
 
-func CheckLoginHandler(c *gin.Context) {
-	InitHeader(c)
-	cookie, err := c.Cookie("trackhours_session_key")
-	if err != nil || cookie == "" {
-		c.JSON(http.StatusOK, gin.H{"is_logged_in": false, "error": err})
+func CheckLoginHandler(w http.ResponseWriter, r *http.Request) {
+	InitHeader(w)
+	cookie, err := r.Cookie("trackhours_session_key")
+	cookieValue, _ := url.QueryUnescape(cookie.Value)
+	if err != nil || cookieValue == "" {
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(CheckLoginResponse{
+			Error:      err.Error(),
+			IsLoggedIn: false,
+		})
 		return
 	}
 	db, err := EstablishConnection()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, Response{
-			Error: "Issue connecting to DB",
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(Response{
+			Error: "Issue connection to DB",
 		})
 		return
 	}
 	defer db.Close()
 	var userSession UserSession
-	db.First(&userSession, "session_key = ?", cookie)
-	c.JSON(http.StatusOK, gin.H{
-		"is_logged_in": cookie == userSession.SessionKey,
-		"error":        nil,
+	db.First(&userSession, "session_key = ?", cookieValue)
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(CheckLoginResponse{
+		Error:      "",
+		IsLoggedIn: cookieValue == userSession.SessionKey,
 	})
 }
 
-func LoginHandler(c *gin.Context) {
-	InitHeader(c)
-	accountInformation, err := generateAccountInformation(c)
+func LoginHandler(w http.ResponseWriter, r *http.Request) {
+	InitHeader(w)
+	accountInformation, err := generateAccountInformation(r)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, Response{
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(Response{
 			Error: "Issue parsing body json",
 		})
 		return
 	}
 	db, err := EstablishConnection()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, Response{
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(Response{
 			Error: "Issue connecting to DB",
 		})
 		return
@@ -151,14 +171,16 @@ func LoginHandler(c *gin.Context) {
 		[]byte(user.Password),
 		[]byte(accountInformation.Password),
 	); err != nil {
-		c.JSON(http.StatusInternalServerError, Response{
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(Response{
 			Error: "Issue encrypting",
 		})
 		return
 	}
 	sessionKey, err := generateSessionKey()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, Response{
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(Response{
 			Error: "Issue generating session key",
 		})
 		return
@@ -168,7 +190,7 @@ func LoginHandler(c *gin.Context) {
 		SessionKey:    sessionKey,
 	}
 	db.Create(&userSession)
-	http.SetCookie(c.Writer, &http.Cookie{
+	http.SetCookie(w, &http.Cookie{
 		Name:     "trackhours_session_key",
 		Value:    sessionKey,
 		MaxAge:   360000,
@@ -177,14 +199,15 @@ func LoginHandler(c *gin.Context) {
 		Secure:   false,
 		HttpOnly: false,
 	})
-	c.JSON(http.StatusOK, Response{
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(Response{
 		Error: "",
 	})
 }
 
-func LogoutHandler(c *gin.Context) {
-	InitHeader(c)
-	http.SetCookie(c.Writer, &http.Cookie{
+func LogoutHandler(w http.ResponseWriter, r *http.Request) {
+	InitHeader(w)
+	http.SetCookie(w, &http.Cookie{
 		Name:     "trackhours_session_key",
 		Value:    "",
 		MaxAge:   360000,
@@ -193,7 +216,8 @@ func LogoutHandler(c *gin.Context) {
 		Secure:   false,
 		HttpOnly: false,
 	})
-	c.JSON(http.StatusOK, Response{
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(Response{
 		Error: "",
 	})
 }
