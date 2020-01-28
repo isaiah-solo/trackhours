@@ -1,7 +1,7 @@
 // @flow strict
 
-import type {Element} from 'react';
-import React, {useCallback, useState} from 'react';
+import type { Element } from 'react';
+import React, { useCallback, useState } from 'react';
 
 import Button from '../component/Button';
 import CredentialInput from './CredentialInput';
@@ -9,33 +9,33 @@ import Page from '../component/Page';
 import PageItemCentered from '../component/PageItemCentered';
 import TextTitle from '../component/TextTitle';
 
-import {fetchCreateAccount, fetchLogin} from '../api/login';
+import { fetchCreateAccount, fetchLogin } from '../api/login';
 
-type Props = {};
+type Props = { onSubmit: () => void };
 
-function LoginPage(): Element<typeof Page> {
+function LoginPage({ onSubmit }: Props): Element<typeof Page> {
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
   const createAccount = useCallback(
     async (): Promise<void> => {
-      const {error} = await fetchCreateAccount(
+      const { error } = await fetchCreateAccount(
         password,
         username
       );
       if (!error) {
-        window.location.reload();
+        onSubmit();
       }
     },
     [password, username],
   );
   const login = useCallback(
     async (): Promise<void> => {
-      const {error} = await fetchLogin(
+      const { error } = await fetchLogin(
         password,
         username
       );
       if (!error) {
-        window.location.reload();
+        onSubmit();
       }
     },
     [password, username],

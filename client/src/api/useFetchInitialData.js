@@ -11,7 +11,9 @@ type InitialData<T> = {
 };
 
 export function useFetchInitialData<T>(
-  apiPath: string
+  apiPath: string,
+  onFetchComplete?: () => void,
+  inputs?: Array<mixed>
 ): InitialData<T> {
   const [data, setData] = useState<?T>(null);
   const [error, setError] = useState(null);
@@ -26,6 +28,9 @@ export function useFetchInitialData<T>(
       } catch (error) {
         setError(error);
       }
+      if (onFetchComplete !== undefined) {
+        onFetchComplete();
+      }
     },
     [],
   );
@@ -33,7 +38,7 @@ export function useFetchInitialData<T>(
     (): void => {
       fetchData();
     },
-    [],
+    inputs !== undefined ? inputs : [],
   );
   return {
     data,
