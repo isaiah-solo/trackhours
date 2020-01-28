@@ -91,7 +91,15 @@ func AccountCreationHandler(c *gin.Context) {
 		SessionKey:    sessionKey,
 	}
 	db.Create(&userSession)
-	c.SetCookie("trackhours_session_key", sessionKey, 360000, "/", "", false, false)
+	http.SetCookie(c.Writer, &http.Cookie{
+		Name:     "trackhours_session_key",
+		Value:    sessionKey,
+		MaxAge:   360000,
+		Path:     "/",
+		Domain:   "",
+		Secure:   false,
+		HttpOnly: false,
+	})
 	c.JSON(http.StatusOK, Response{
 		Error: "",
 	})
@@ -160,15 +168,15 @@ func LoginHandler(c *gin.Context) {
 		SessionKey:    sessionKey,
 	}
 	db.Create(&userSession)
-	c.SetCookie(
-		"trackhours_session_key",
-		sessionKey,
-		360000,
-		"/",
-		"",
-		false,
-		false,
-	)
+	http.SetCookie(c.Writer, &http.Cookie{
+		Name:     "trackhours_session_key",
+		Value:    sessionKey,
+		MaxAge:   360000,
+		Path:     "/",
+		Domain:   "",
+		Secure:   false,
+		HttpOnly: false,
+	})
 	c.JSON(http.StatusOK, Response{
 		Error: "",
 	})
@@ -176,15 +184,15 @@ func LoginHandler(c *gin.Context) {
 
 func LogoutHandler(c *gin.Context) {
 	InitHeader(c)
-	c.SetCookie(
-		"trackhours_session_key",
-		"",
-		360000,
-		"/",
-		"",
-		false,
-		false,
-	)
+	http.SetCookie(c.Writer, &http.Cookie{
+		Name:     "trackhours_session_key",
+		Value:    "",
+		MaxAge:   360000,
+		Path:     "/",
+		Domain:   "",
+		Secure:   false,
+		HttpOnly: false,
+	})
 	c.JSON(http.StatusOK, Response{
 		Error: "",
 	})
