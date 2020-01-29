@@ -22,7 +22,7 @@ func EstablishConnection() (*gorm.DB, error) {
 	return db, err
 }
 
-func DatabaseWrapper(
+func DBHandlerFor(
 	handler func(db *gorm.DB, w http.ResponseWriter, r *http.Request),
 ) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
