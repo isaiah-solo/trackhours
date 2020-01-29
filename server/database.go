@@ -25,8 +25,8 @@ func EstablishConnection() (*gorm.DB, error) {
 func DatabaseWrapper(
 	handler func(db *gorm.DB, w http.ResponseWriter, r *http.Request),
 ) func(http.ResponseWriter, *http.Request) {
-	db, err := EstablishConnection()
 	return func(w http.ResponseWriter, r *http.Request) {
+		db, err := EstablishConnection()
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			json.NewEncoder(w).Encode(Response{
