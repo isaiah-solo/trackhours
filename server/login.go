@@ -36,6 +36,20 @@ type UserSession struct {
 	SessionKey    string `json:"session_key"`
 }
 
+func createInternalServerError(w http.ResponseWriter, err error) {
+	w.WriteHeader(http.StatusInternalServerError)
+	json.NewEncoder(w).Encode(CheckLoginResponse{
+		Error: err.Error(),
+	})
+}
+
+func createSuccessResponse(w http.ResponseWriter) {
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(Response{
+		Error: "",
+	})
+}
+
 func generateAccountInformation(r *http.Request) (AccountInformation, error) {
 	var accountInformation AccountInformation
 	body, err := ioutil.ReadAll(r.Body)
@@ -54,49 +68,19 @@ func generateSessionKey() (string, error) {
 	return u.String(), err
 }
 
-func AccountCreationHandler(
-	db *gorm.DB,
-	w http.ResponseWriter,
-	r *http.Request,
-) {
-	InitHeader(w)
-	accountInformation, err := generateAccountInformation(r)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(CheckLoginResponse{
-			Error: "Issue parsing body json",
-		})
-		return
-	}
-	hash, err := bcrypt.GenerateFromPassword(
-		[]byte(accountInformation.Password),
-		bcrypt.MinCost,
-	)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(CheckLoginResponse{
-			Error: "Issue encrypting",
-		})
-		return
-	}
-	user := User{
-		Password: string(hash),
-		Username: accountInformation.Username,
-	}
-	db.Create(&user)
-	sessionKey, err := generateSessionKey()
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(CheckLoginResponse{
-			Error: "Issue generating session key",
-		})
-		return
-	}
-	userSession := UserSession{
-		OwnerUsername: user.Username,
-		SessionKey:    sessionKey,
-	}
-	db.Create(&userSession)
+func removeCookie(w http.ResponseWriter) {
+	http.SetCookie(w, &http.Cookie{
+		Name:     "trackhours_session_key",
+		Value:    "",
+		MaxAge:   -1,
+		Path:     "/",
+		Domain:   "",
+		Secure:   false,
+		HttpOnly: false,
+	})
+}
+
+func setCookie(w http.ResponseWriter, sessionKey string) {
 	http.SetCookie(w, &http.Cookie{
 		Name:     "trackhours_session_key",
 		Value:    sessionKey,
@@ -106,10 +90,43 @@ func AccountCreationHandler(
 		Secure:   false,
 		HttpOnly: false,
 	})
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(CheckLoginResponse{
-		Error: "",
-	})
+}
+
+func AccountCreationHandler(
+	db *gorm.DB,
+	w http.ResponseWriter,
+	r *http.Request,
+) {
+	accountInformation, err := generateAccountInformation(r)
+	if err != nil {
+		createInternalServerError(w, err)
+		return
+	}
+	hash, err := bcrypt.GenerateFromPassword(
+		[]byte(accountInformation.Password),
+		bcrypt.MinCost,
+	)
+	if err != nil {
+		createInternalServerError(w, err)
+		return
+	}
+	user := User{
+		Password: string(hash),
+		Username: accountInformation.Username,
+	}
+	db.Create(&user)
+	sessionKey, err := generateSessionKey()
+	if err != nil {
+		createInternalServerError(w, err)
+		return
+	}
+	userSession := UserSession{
+		OwnerUsername: user.Username,
+		SessionKey:    sessionKey,
+	}
+	db.Create(&userSession)
+	setCookie(w, sessionKey)
+	createSuccessResponse(w)
 }
 
 func CheckLoginHandler(
@@ -117,7 +134,6 @@ func CheckLoginHandler(
 	w http.ResponseWriter,
 	r *http.Request,
 ) {
-	InitHeader(w)
 	cookie, err := r.Cookie("trackhours_session_key")
 	if err != nil {
 		w.WriteHeader(http.StatusOK)
@@ -150,13 +166,9 @@ func LoginHandler(
 	w http.ResponseWriter,
 	r *http.Request,
 ) {
-	InitHeader(w)
 	accountInformation, err := generateAccountInformation(r)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(Response{
-			Error: "Issue parsing body json",
-		})
+		createInternalServerError(w, err)
 		return
 	}
 	var user User
@@ -165,18 +177,12 @@ func LoginHandler(
 		[]byte(user.Password),
 		[]byte(accountInformation.Password),
 	); err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(Response{
-			Error: "Issue encrypting",
-		})
+		createInternalServerError(w, err)
 		return
 	}
 	sessionKey, err := generateSessionKey()
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(Response{
-			Error: "Issue generating session key",
-		})
+		createInternalServerError(w, err)
 		return
 	}
 	userSession := UserSession{
@@ -184,19 +190,9 @@ func LoginHandler(
 		SessionKey:    sessionKey,
 	}
 	db.Create(&userSession)
-	http.SetCookie(w, &http.Cookie{
-		Name:     "trackhours_session_key",
-		Value:    sessionKey,
-		MaxAge:   360000,
-		Path:     "/",
-		Domain:   "",
-		Secure:   false,
-		HttpOnly: false,
-	})
+	setCookie(w, sessionKey)
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(Response{
-		Error: "",
-	})
+	createSuccessResponse(w)
 }
 
 func LogoutHandler(
@@ -204,18 +200,7 @@ func LogoutHandler(
 	w http.ResponseWriter,
 	r *http.Request,
 ) {
-	InitHeader(w)
-	http.SetCookie(w, &http.Cookie{
-		Name:     "trackhours_session_key",
-		Value:    "",
-		MaxAge:   -1,
-		Path:     "/",
-		Domain:   "",
-		Secure:   false,
-		HttpOnly: false,
-	})
+	removeCookie(w)
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(Response{
-		Error: "",
-	})
+	createSuccessResponse(w)
 }

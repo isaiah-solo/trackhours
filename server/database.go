@@ -26,6 +26,8 @@ func DBHandlerFor(
 	handler func(db *gorm.DB, w http.ResponseWriter, r *http.Request),
 ) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Credentials", "true")
+		w.Header().Set("Access-Control-Allow-Origin", BackendOrigin)
 		db, err := EstablishConnection()
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)

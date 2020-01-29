@@ -35,11 +35,6 @@ var eventNames = [...]string{
 	"start_lunch_event",
 }
 
-func InitHeader(w http.ResponseWriter) {
-	w.Header().Set("Access-Control-Allow-Credentials", "true")
-	w.Header().Set("Access-Control-Allow-Origin", BackendOrigin)
-}
-
 func main() {
 	http.HandleFunc("/api/check_login", DBHandlerFor(CheckLoginHandler))
 	http.HandleFunc("/api/logout", DBHandlerFor(LogoutHandler))
