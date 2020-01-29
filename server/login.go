@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	uuid "github.com/satori/go.uuid"
 	"golang.org/x/crypto/bcrypt"
@@ -53,17 +54,12 @@ func generateSessionKey() (string, error) {
 	return u.String(), err
 }
 
-func AccountCreationHandler(w http.ResponseWriter, r *http.Request) {
+func AccountCreationHandler(
+	db *gorm.DB,
+	w http.ResponseWriter,
+	r *http.Request,
+) {
 	InitHeader(w)
-	db, err := EstablishConnection()
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(CheckLoginResponse{
-			Error: "Issue connecting to DB",
-		})
-		return
-	}
-	defer db.Close()
 	accountInformation, err := generateAccountInformation(r)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -116,7 +112,11 @@ func AccountCreationHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func CheckLoginHandler(w http.ResponseWriter, r *http.Request) {
+func CheckLoginHandler(
+	db *gorm.DB,
+	w http.ResponseWriter,
+	r *http.Request,
+) {
 	InitHeader(w)
 	cookie, err := r.Cookie("trackhours_session_key")
 	if err != nil {
@@ -136,15 +136,6 @@ func CheckLoginHandler(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-	db, err := EstablishConnection()
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(Response{
-			Error: "Issue connection to DB",
-		})
-		return
-	}
-	defer db.Close()
 	var userSession UserSession
 	db.First(&userSession, "session_key = ?", cookieValue)
 	w.WriteHeader(http.StatusOK)
@@ -154,7 +145,11 @@ func CheckLoginHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func LoginHandler(w http.ResponseWriter, r *http.Request) {
+func LoginHandler(
+	db *gorm.DB,
+	w http.ResponseWriter,
+	r *http.Request,
+) {
 	InitHeader(w)
 	accountInformation, err := generateAccountInformation(r)
 	if err != nil {
@@ -164,15 +159,6 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-	db, err := EstablishConnection()
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(Response{
-			Error: "Issue connecting to DB",
-		})
-		return
-	}
-	defer db.Close()
 	var user User
 	db.First(&user, "username = ?", accountInformation.Username)
 	if err := bcrypt.CompareHashAndPassword(
@@ -213,7 +199,11 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func LogoutHandler(w http.ResponseWriter, r *http.Request) {
+func LogoutHandler(
+	db *gorm.DB,
+	w http.ResponseWriter,
+	r *http.Request,
+) {
 	InitHeader(w)
 	http.SetCookie(w, &http.Cookie{
 		Name:     "trackhours_session_key",

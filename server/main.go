@@ -41,9 +41,9 @@ func InitHeader(w http.ResponseWriter) {
 }
 
 func main() {
-	http.HandleFunc("/api/check_login", CheckLoginHandler)
-	http.HandleFunc("/api/logout", LogoutHandler)
-	http.HandleFunc("/api/account_creation", AccountCreationHandler)
-	http.HandleFunc("/api/login", LoginHandler)
+	http.HandleFunc("/api/check_login", DatabaseWrapper(CheckLoginHandler))
+	http.HandleFunc("/api/logout", DatabaseWrapper(LogoutHandler))
+	http.HandleFunc("/api/account_creation", DatabaseWrapper(AccountCreationHandler))
+	http.HandleFunc("/api/login", DatabaseWrapper(LoginHandler))
 	log.Fatal(http.ListenAndServe(":8081", nil))
 }
