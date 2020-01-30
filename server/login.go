@@ -191,7 +191,6 @@ func LoginHandler(
 	}
 	db.Create(&userSession)
 	setCookie(w, sessionKey)
-	w.WriteHeader(http.StatusOK)
 	createSuccessResponse(w)
 }
 
@@ -201,6 +200,5 @@ func LogoutHandler(
 	r *http.Request,
 ) {
 	removeCookie(w)
-	w.WriteHeader(http.StatusOK)
 	createSuccessResponse(w)
 }
